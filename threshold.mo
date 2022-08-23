@@ -48,7 +48,9 @@ actor threshold {
     // authorised principals can retrieve proposals
     public shared query ({caller}) func get_proposals() : async [Proposal] {
         authorise caller;
-        Array_tabulate<Proposal>(proposals.size(), func n = { proposals[n] with state = proposals[n].state })
+        // Array_tabulate<Proposal>(proposals.size(), func n = { proposals[n] with state = proposals[n].state })
+        Array_tabulate<Proposal>(proposals.size(),
+                                 func n = { id = proposals[n].id; state = proposals[n].state; payload = proposals[n].payload })
     };
 
     // traps when p is not in the `authorised` list

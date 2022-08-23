@@ -1,0 +1,35 @@
+{
+  "canisters": {
+    "threshold_backend": {
+      "main": "src/threshold_backend/main.mo",
+      "type": "motoko"
+    },
+    "threshold_frontend": {
+      "dependencies": [
+        "threshold_backend"
+      ],
+      "frontend": {
+        "entrypoint": "src/threshold_frontend/src/index.html"
+      },
+      "source": [
+        "src/threshold_frontend/assets",
+        "dist/threshold_frontend/"
+      ],
+      "type": "assets"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "dfx": "0.11.1",
+  "networks": {
+    "local": {
+      "bind": "127.0.0.1:8000",
+      "type": "ephemeral"
+    }
+  },
+  "version": 1
+}
