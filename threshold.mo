@@ -39,6 +39,7 @@ actor threshold {
     };
 
     public shared ({caller}) func update(authlist : [Principal]) : async () {
+        // initial setup of principals can be by any principal
         if (authlist != []) self caller;
         // TODO: disallow duplicates and long lists
         authorised := authlist
