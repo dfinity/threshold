@@ -1,4 +1,4 @@
-import {Array_tabulate; call_raw; principalOfActor} = "mo:⛔";
+import {Array_tabulate; call_raw; debugPrint; principalOfActor} = "mo:⛔";
 
 actor threshold {
     type Id = Text;
@@ -40,7 +40,7 @@ actor threshold {
 
     public shared ({caller}) func update(authlist : [Principal]) : async () {
         // initial setup of principals can be by any principal
-        if (authlist != []) self caller;
+        if (authorised != []) self caller;
         // TODO: disallow duplicates and long lists
         authorised := authlist
     };
@@ -58,6 +58,9 @@ actor threshold {
     func authorise(p : Principal) {
         for (a in authorised.vals()) {
             if (p == a) return
+        };
+        debug {
+            debugPrint(debug_show ("cannot authorise", p))
         };
         assert false;
     };
