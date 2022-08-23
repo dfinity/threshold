@@ -1,4 +1,4 @@
-import {call_raw; principalOfActor} "mo:⛔";
+import {Array_tabulate; call_raw; principalOfActor} = "mo:⛔";
 
 actor threshold {
     type Id = Text;
@@ -7,7 +7,8 @@ actor threshold {
     stable var authorised : [Principal] = [];
     stable var proposals : [{ id : Id; var state : State; payload : Payload} ] = [];
 
-    public func register(id : Id, payload : Payload) : async () {
+    public shared ({caller}) func register(id : Id, payload : Payload) : async () {
+        authorise caller;
         // TODO allow several
         proposals := [{ id; var state = (false, 0, 0); payload }];
     };
@@ -43,6 +44,13 @@ actor threshold {
         authorised := authlist
     };
 
+    type Proposal = { id : Id; state : State; payload : Payload };
+    // authorised principals can retrieve proposals
+    public shared query ({caller}) func get_proposals() : async [Proposal] {
+        authorise caller;
+        Array_tabulate<Proposal>(proposals.size(), func n = { proposals[n] with state = proposals[n].state })
+    };
+
     // traps when p is not in the `authorised` list
     func authorise(p : Principal) {
         for (a in authorised.vals()) {
@@ -57,6 +65,6 @@ actor threshold {
         assert false;
     };
 
-    func passing((_, yes : Int, no) : State) : Bool = yes - no > 3; // FIXME!
+    func passing((_, yes : Int, no) : State) : Bool = 2 * yes > authorised.size(); // FIXME!
 
 }
