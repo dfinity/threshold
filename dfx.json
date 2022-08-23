@@ -1,21 +1,8 @@
 {
   "canisters": {
-    "threshold_backend": {
-      "main": "src/threshold_backend/main.mo",
+    "threshold": {
+      "main": "threshold.mo",
       "type": "motoko"
-    },
-    "threshold_frontend": {
-      "dependencies": [
-        "threshold_backend"
-      ],
-      "frontend": {
-        "entrypoint": "src/threshold_frontend/src/index.html"
-      },
-      "source": [
-        "src/threshold_frontend/assets",
-        "dist/threshold_frontend/"
-      ],
-      "type": "assets"
     }
   },
   "defaults": {
