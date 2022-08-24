@@ -1,6 +1,18 @@
 # threshold
 Threshold voting and execution for the IC
 
+## Example Proposal
+
+One can send an example proposal to `threshold` by
+``` shell
+dfx canister call  threshold register '("haha", record {principal "rrkah-fqaaa-aaaaa-aaaaq-cai"; "accept"; vec {68; 73; 68; 76; 0; 1; 113; 4; 104; 97; 104; 97}})'
+```
+This will prepare the "haha" proposal which  when executed will `accept '"haha"'` on itself.
+You'll see in the replica log that the proposal got executed by seeing
+```
+[Canister rrkah-fqaaa-aaaaa-aaaaq-cai] ("cannot authorise", rrkah-fqaaa-aaaaa-aaaaq-cai)
+```
+because the canister is not authorised to vote.
 -------------
 
 Welcome to your new threshold project and to the internet computer development community. By default, creating a new project adds this README and some template files to your project directory. You can edit these template files to customize your project and to include your own code to speed up the development cycle.
