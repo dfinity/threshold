@@ -13,6 +13,13 @@ You'll see in the replica log that the proposal got executed by seeing
 [Canister rrkah-fqaaa-aaaaa-aaaaq-cai] ("cannot authorise", rrkah-fqaaa-aaaaa-aaaaq-cai)
 ```
 because the canister is not authorised to vote.
+
+If you have set up the voters array to contain 2 principals, then you have to vote twice to see that error:
+``` shell
+dfx canister call  threshold accept '"haha"'
+dfx canister call  threshold accept '"haha"'
+```
+
 -------------
 
 Welcome to your new threshold project and to the internet computer development community. By default, creating a new project adds this README and some template files to your project directory. You can edit these template files to customize your project and to include your own code to speed up the development cycle.
