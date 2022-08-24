@@ -12,7 +12,7 @@ _Note_: above the first principal is the `dfx` identity, so that one can vote fr
 The first call to a fresh (after (re-)install) `threshold` canister can set the list of voter principals.
 After that this must be done by proposals.
 
-_CAVEAT_: if the initial voter list doesn't contain `threshold`'s principal, self-updates will be rejected as demonstrated in the next steps...
+_CAVEAT_: if the initial voter list doesn't contain `threshold`'s principal (`dfx canister id threshold`), self-updates will be rejected as demonstrated in the next steps...
 
 ## Example Proposal
 
