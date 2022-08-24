@@ -1,11 +1,24 @@
 # threshold
 Threshold voting and execution for the IC
 
+## Setting up the voter list
+
+``` shell
+dfx canister call threshold update 'vec {principal "'$(dfx identity get-principal)'"; principal "2vxsx-fae"}'
+```
+
+_Note_: above the first principal is the `dfx` identity, so that one can vote from the command line. The second identity is the Candid GUI's, so that it can also be used.
+
+The first call to a fresh (after (re-)install) `threshold` canister can set the list of voter principals.
+After that this must be done by proposals.
+
+CAVEAT: if the initial voter list doesn't contain `threshold`'s principal, self-updates will be rejected as demonstrated in the next steps...
+
 ## Example Proposal
 
 One can send an example proposal to `threshold` by
 ``` shell
-dfx canister call  threshold register '("haha", record {principal "rrkah-fqaaa-aaaaa-aaaaq-cai"; "accept"; vec {68; 73; 68; 76; 0; 1; 113; 4; 104; 97; 104; 97}})'
+dfx canister` call `threshold register '("haha", record {principal "rrkah-fqaaa-aaaaa-aaaaq-cai"; "accept"; vec {68; 73; 68; 76; 0; 1; 113; 4; 104; 97; 104; 97}})'
 ```
 This will prepare the "haha" proposal which  when executed will `accept '"haha"'` on itself.
 You'll see in the replica log that the proposal got executed by seeing
@@ -16,8 +29,8 @@ because the canister is not authorised to vote.
 
 If you have set up the voters array to contain 2 principals, then you have to vote twice to see that error:
 ``` shell
-dfx canister call  threshold accept '"haha"'
-dfx canister call  threshold accept '"haha"'
+dfx canister call threshold accept '"haha"'
+dfx canister call threshold accept '"haha"'
 ```
 
 -------------
