@@ -9,6 +9,8 @@ Notable omissions:
 - ad-hoc threshold calculation
 - no checks for duplicate proposal ids
 - no checks for duplicate voters in the list
+- no pruning of retired proposals
+- no timestamps
 - etc.
 
 ## What this does
