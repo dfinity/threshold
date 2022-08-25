@@ -1,6 +1,15 @@
 # threshold
 Threshold voting and execution for the IC
 
+## Proof of Concept
+
+_Note_: This is a proof-of-concept (POC) canister, no security review performed yet!
+Notable omissions:
+- no single vote check per voter
+- ad-hoc threshold calculation
+- no checks for duplicate proposal ids
+- etc.
+
 ## Setting up the voter list
 
 ``` shell
