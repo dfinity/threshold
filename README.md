@@ -3,12 +3,20 @@ Threshold voting and execution for the IC
 
 ## Proof of Concept
 
-_Note_: This is a proof-of-concept (POC) canister, no security review performed yet!
+_Note_: This is a proof-of-concept (POC) canister, **no security review performed yet**!
 Notable omissions:
 - no single vote check per voter
 - ad-hoc threshold calculation
 - no checks for duplicate proposal ids
+- no checks for duplicate voters in the list
 - etc.
+
+## What this does
+
+- one can add a collection of voters (principals)
+- one can add new proposals (by ID and action, an action being the destination canister, invoked method and argument payload)
+- voters can accept/deny
+- when sufficient votes for a proposal have gathered, the action gets executed and the proposal retired
 
 ## Setting up the voter list
 
