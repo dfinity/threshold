@@ -9,8 +9,8 @@ actor threshold {
 
     public shared ({caller}) func register(id : Id, payload : Payload) : async () {
         authorise caller;
-        // TODO allow several
-        proposals := [{ id; var state = (true, 0, 0); payload }];
+        // TODO: sanitise (no duplicates, etc.)
+        proposals := prepend({ id; var state = (true, 0, 0); payload }, proposals);
     };
 
     public shared ({caller}) func accept(id : Id) : async () {
@@ -49,7 +49,7 @@ actor threshold {
     // authorised principals can retrieve proposals
     public shared query ({caller}) func get_proposals() : async [Proposal] {
         authorise caller;
-        // Array_tabulate<Proposal>(proposals.size(), func n = { proposals[n] with state = proposals[n].state })
+        // `moc` v0.7: Array_tabulate<Proposal>(proposals.size(), func n = { proposals[n] with state = proposals[n].state })
         Array_tabulate<Proposal>(proposals.size(),
                                  func n = { id = proposals[n].id; state = proposals[n].state; payload = proposals[n].payload })
     };
@@ -72,5 +72,9 @@ actor threshold {
     };
 
     func passing((_, yes : Int, no) : State) : Bool = 2 * yes > authorised.size(); // FIXME!
+
+    // utilities
+    func prepend<A>(a : A, as : [A]) : [A] =
+        Array_tabulate<A>(as.size() + 1, func i = switch i { case 0 a; case _ as[i - 1] });
 
 }
