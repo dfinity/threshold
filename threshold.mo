@@ -74,6 +74,6 @@ actor threshold {
 
     // utilities
     func prepend<A>(a : A, as : [A]) : [A] =
-        Array_tabulate<A>(as.size() + 1, func i = switch i { case 0 a; case _ as[i - 1] });
+        Array_tabulate<A>(as.size() + 1, func i = if (i == 0) a else as[i - 1]);
 
 }
