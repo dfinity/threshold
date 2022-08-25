@@ -67,8 +67,7 @@ actor threshold {
 
     // traps when p is not this actor
     func self(p : Principal) {
-        if (p == principalOfActor threshold) return;
-        assert false;
+        assert p == principalOfActor threshold
     };
 
     func passing((_, yes : Int, no) : State) : Bool = 2 * yes > authorised.size(); // FIXME!
