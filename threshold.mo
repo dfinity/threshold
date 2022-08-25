@@ -18,12 +18,13 @@ actor threshold {
         for (prop in proposals.vals()) {
             let { id = i; payload = (principal, method, blob) } = prop;
             let (active, yes, no) = prop.state;
-            if (id != i or not active) return;
-            prop.state := (active, yes + 1, no); // FIXME: track votes by principal
-            if (passing(prop.state)) {
-                prop.state := (false, prop.state.1, prop.state.2);
-                // send the payload
-                let _ = call_raw(principal, method, blob);
+            if (id == i and active) {
+                prop.state := (active, yes + 1, no); // FIXME: track votes by principal
+                if (passing(prop.state)) {
+                    prop.state := (false, prop.state.1, prop.state.2);
+                    // send the payload
+                    let _ = call_raw(principal, method, blob);
+                }
             }
         };
     };
@@ -33,8 +34,9 @@ actor threshold {
         for (prop in proposals.vals()) {
             let { id = i; payload = (principal, method, blob) } = prop;
             let (active, yes, no) = prop.state;
-            if (id != i or not active) return;
-            prop.state := (active, yes, no + 1); // FIXME: track votes by principal
+            if (id == i and active) {
+                prop.state := (active, yes, no + 1); // FIXME: track votes by principal
+            }
         }
     };
 
