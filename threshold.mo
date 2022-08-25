@@ -24,7 +24,8 @@ actor threshold {
                     prop.state := (false, prop.state.1, prop.state.2);
                     // send the payload
                     let _ = call_raw(principal, method, blob);
-                }
+                };
+                return
             }
         };
     };
@@ -36,6 +37,7 @@ actor threshold {
             let (active, yes, no) = prop.state;
             if (id == i and active) {
                 prop.state := (active, yes, no + 1); // FIXME: track votes by principal
+                return
             }
         }
     };
