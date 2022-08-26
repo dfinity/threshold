@@ -62,7 +62,7 @@ is extracted and compared against `threshold`. If they are equal the install par
 are used as arguments to the one-way invocation of the management canister's `install_code`
 method.
 
-### Concrete command
+### The concrete command
 
 Below proposal submission command upgrades `threshold` to a counter canister with `get`
 (query) and `inc` (update) methods.
@@ -78,6 +78,10 @@ After a successful "upgrade" `threshold` will serve the `get` query:
 dfx canister call threshold --query get
 (0 : int64)
 ```
+_Note_: if you see something else, you have probably forgot to set `threshold` to be its own controller.
+
+### Salvaging the situation
+
 The stable memory of `threshold` is untouched by `counter`, so a subsequent `dfx deploy`
 will restore it to a working state.
 
