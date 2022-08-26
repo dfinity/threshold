@@ -33,7 +33,7 @@ actor threshold {
                           ic00.install_code params
                       };
                       case _ {
-                              let _ = call_raw(principal, method, blob)
+                              let _ = await call_raw(principal, method, blob)
                           }
                       }
                 };
