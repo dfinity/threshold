@@ -23,7 +23,14 @@ actor threshold {
                 if (passing(prop.state)) {
                     prop.state := (false, prop.state.1, prop.state.2);
                     // send the payload
-                    let _ = call_raw(principal, method, blob);
+                    switch (is_selfupgrade(principal, method, blob)) {
+                      case (?params) {
+                          debug debugPrint(debug_show ("it's a selfupgrade", params))
+                      };
+                      case _ {
+                              let _ = call_raw(principal, method, blob)
+                          }
+                      }
                 };
                 return
             }
