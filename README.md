@@ -78,6 +78,8 @@ After a successful "upgrade" `threshold` will serve the `get` query:
 dfx canister call threshold --query get
 (0 : int64)
 ```
+The stable memory of `threshold` is untouched by `counter`, so a subsequent `dfx deploy`
+will restore it to a working state.
 
 -------------
 
