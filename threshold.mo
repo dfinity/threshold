@@ -80,4 +80,21 @@ actor threshold {
     func prepend<A>(a : A, as : [A]) : [A] =
         Array_tabulate<A>(as.size() + 1, func i = if (i == 0) a else as[i - 1]);
 
+    type InstallParams = {
+        mode : { #install; #reinstall; #upgrade };
+        canister_id : Principal;
+        wasm_module : Blob;
+        arg : Blob;
+    };
+    func is_selfupgrade((addressee, method, args) : Payload) : ?InstallParams {
+        if (addressee == principalOfActor (actor "aaaaa-aa") and method == "install_code") {
+            do ? {
+                let params : InstallParams = (from_candid(args) : ?InstallParams)!;
+                if (params.canister_id == principalOfActor threshold)
+                   params
+                   else null!
+            }
+        } else null
+    };
+
 }
