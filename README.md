@@ -64,7 +64,7 @@ method.
 
 ### The concrete command
 
-Below proposal submission command upgrades `threshold` to a counter canister with `get`
+Below proposal submission command upgrades `threshold` to a `counter` canister with `get`
 (query) and `inc` (update) methods.
 
 ``` shell
