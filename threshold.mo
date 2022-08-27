@@ -4,7 +4,9 @@ actor threshold {
     type Id = Text;
     type Timestamp = Nat;
     type Payload = (Principal, Text, Blob);
+    type Vote = (Timestamp, Principal);
     type State = (Bool, Nat, Nat);
+
     stable var authorised : [Principal] = [];
     stable var proposals : [{ id : Id; var state : State; payload : Payload} ] = [];
 
@@ -116,4 +118,11 @@ actor threshold {
     };
 
     func now() : Timestamp = nat64ToNat(nanos1970()) / 1_000_000_000; // seconds since 1970-01-01
+
+    func vote(signer : Principal, votes : [Vote]) : ?[Vote] {
+        for ((_, p) in votes.vals()) {
+            if (p == signer) return null;
+        };
+        ?prepend((now(), signer), votes);
+    }
 }
