@@ -10,7 +10,7 @@ actor threshold {
     public shared ({caller}) func register(id : Id, payload : Payload) : async () {
         authorise caller;
         // TODO: sanitise (no duplicates, etc.)
-        proposals := prepend({ id; var state = (true, 0, 0); payload }, proposals);
+        proposals := prepend({ id; var state = (true, 1, 0); payload }, proposals);
     };
 
     public shared ({caller}) func accept(id : Id) : async () {
