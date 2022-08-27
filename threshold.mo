@@ -5,42 +5,47 @@ actor threshold {
     type Timestamp = Nat;
     type Payload = (Principal, Text, Blob);
     type Vote = (Timestamp, Principal);
-    type State = (Bool, Nat, Nat);
+    type State = (Bool, Nat, Nat, [Vote]);
+    type Prop = { id : Id; var state : State; payload : Payload };
 
     stable var authorised : [Principal] = [];
-    stable var proposals : [{ id : Id; var state : State; payload : Payload} ] = [];
+    stable var proposals : [Prop] = [];
 
     public shared ({caller}) func register(id : Id, payload : Payload) : async () {
         authorise caller;
         // TODO: sanitise (no duplicates, etc.)
-        proposals := prepend({ id; var state = (true, 1, 0); payload }, proposals);
+        let ?votes = vote(caller, []);
+        proposals := prepend<Prop>({ id; var state = (true, 1, 0, votes); payload }, proposals);
     };
 
     public shared ({caller}) func accept(id : Id) : async () {
         authorise caller;
         for (prop in proposals.vals()) {
             let { id = i; payload = (principal, method, blob) } = prop;
-            let (active, yes, no) = prop.state;
-            if (id == i and active) {
-                prop.state := (active, yes + 1, no); // FIXME: track votes by principal
-                if (passing(prop.state)) {
-                    prop.state := (false, prop.state.1, prop.state.2);
-                    // send the payload
-                    switch (is_selfupgrade(principal, method, blob)) {
-                      case (?params) {
-                          debug debugPrint(debug_show ("it's a selfupgrade", params));
-                          let ic00 = actor "aaaaa-aa" :
-                                     actor {
-                                               install_code : InstallParams -> ()
-                                           };
-                          ic00.install_code params
-                      };
-                      case _ {
-                              let _ = await call_raw(principal, method, blob)
-                          }
-                      }
-                };
-                return
+            let (active, yes, no, votes) = prop.state;
+            switch (vote(caller, votes)) {
+                case null return;
+                case (?votes) {
+                    if (id == i and active) {
+                        prop.state := (active, yes + 1, no, votes); // FIXME: track votes by principal
+                        if (passing(prop.state)) {
+                            prop.state := (false, prop.state.1, prop.state.2, prop.state.3);
+                            // send the payload
+                            switch (is_selfupgrade(principal, method, blob)) {
+                                case (?params) {
+                                    debug debugPrint(debug_show ("it's a selfupgrade", params));
+                                    let ic00 = actor "aaaaa-aa" :
+                                               actor { install_code : InstallParams -> () };
+                                    ic00.install_code params
+                                };
+                                case _ {
+                                    let _ = await call_raw(principal, method, blob)
+                                }
+                            }
+                        };
+                        return
+                    }
+                }
             }
         };
     };
@@ -49,9 +54,9 @@ actor threshold {
         authorise caller;
         for (prop in proposals.vals()) {
             let { id = i; payload = (principal, method, blob) } = prop;
-            let (active, yes, no) = prop.state;
+            let (active, yes, no, votes) = prop.state;
             if (id == i and active) {
-                prop.state := (active, yes, no + 1); // FIXME: track votes by principal
+                prop.state := (active, yes, no + 1, votes); // FIXME: track votes by principal
                 return
             }
         }
@@ -94,7 +99,7 @@ actor threshold {
         assert p == principalOfActor threshold
     };
 
-    func passing((_, yes : Int, no) : State) : Bool = 2 * yes > authorised.size(); // FIXME!
+    func passing((_, yes : Int, no, _) : State) : Bool = 2 * yes > authorised.size(); // FIXME!
 
     // utilities
     func prepend<A>(a : A, as : [A]) : [A] =
