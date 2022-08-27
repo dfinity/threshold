@@ -1,7 +1,8 @@
-import {Array_tabulate; call_raw; debugPrint; principalOfActor} = "mo:⛔";
+import {Array_tabulate; call_raw; debugPrint; principalOfActor; nat64ToNat; time = nanos1970} = "mo:⛔";
 
 actor threshold {
     type Id = Text;
+    type Timestamp = Nat;
     type Payload = (Principal, Text, Blob);
     type State = (Bool, Nat, Nat);
     stable var authorised : [Principal] = [];
@@ -113,4 +114,6 @@ actor threshold {
             }
         } else null
     };
+
+    func now() : Timestamp = nat64ToNat(nanos1970()) / 1_000_000_000; // seconds since 1970-01-01
 }
