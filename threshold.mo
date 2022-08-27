@@ -21,28 +21,14 @@ actor threshold {
     public shared ({caller}) func accept(id : Id) : async () {
         authorise caller;
         for (prop in proposals.vals()) {
-            let { id = i; payload = (principal, method, blob) } = prop;
+            let { id = i; payload } = prop;
             let (active, yes, no, votes) = prop.state;
             switch (vote(caller, votes)) {
                 case null return;
                 case (?votes) {
                     if (id == i and active) {
                         prop.state := (active, yes + 1, no, votes); // FIXME: track votes by principal
-                        if (passing(prop.state)) {
-                            prop.state := (false, prop.state.1, prop.state.2, prop.state.3);
-                            // send the payload
-                            switch (is_selfupgrade(principal, method, blob)) {
-                                case (?params) {
-                                    debug debugPrint(debug_show ("it's a selfupgrade", params));
-                                    let ic00 = actor "aaaaa-aa" :
-                                               actor { install_code : InstallParams -> () };
-                                    ic00.install_code params
-                                };
-                                case _ {
-                                    let _ = await call_raw(principal, method, blob)
-                                }
-                            }
-                        };
+                        if (passing(prop.state)) { /*do not*/ await execute(prop, payload) };
                         return
                     }
                 }
@@ -55,9 +41,14 @@ actor threshold {
         for (prop in proposals.vals()) {
             let { id = i; payload = (principal, method, blob) } = prop;
             let (active, yes, no, votes) = prop.state;
-            if (id == i and active) {
-                prop.state := (active, yes, no + 1, votes); // FIXME: track votes by principal
-                return
+            switch (vote(caller, votes)) {
+                case null return;
+                case (?votes) {
+                    if (id == i and active) {
+                        prop.state := (active, yes, no + 1, votes); // FIXME: track votes by principal
+                        return
+                    }
+                }
             }
         }
     };
@@ -100,6 +91,22 @@ actor threshold {
     };
 
     func passing((_, yes : Int, no, _) : State) : Bool = 2 * yes > authorised.size(); // FIXME!
+
+    func execute(prop : Prop, (principal, method, blob) : Payload) : async () {
+        prop.state := (false, prop.state.1, prop.state.2, prop.state.3);
+        // send the payload
+        switch (is_selfupgrade(principal, method, blob)) {
+            case (?params) {
+                     debug debugPrint(debug_show ("it's a selfupgrade", params));
+                     let ic00 = actor "aaaaa-aa" :
+                                actor { install_code : InstallParams -> () };
+                     ic00.install_code params
+                 };
+            case _ {
+                     let _ = await call_raw(principal, method, blob)
+            }
+        }
+    };
 
     // utilities
     func prepend<A>(a : A, as : [A]) : [A] =
