@@ -28,6 +28,7 @@ actor threshold {
                 case (?votes) {
                     if (id == i and active) {
                         prop.state := (active, yes + 1, no, votes);
+                        func passing((_, yes, no, _) : State) : Bool = 2 * yes > authorised.size(); // FIXME!
                         if (passing(prop.state)) { /*do not*/ await execute(prop, payload) };
                         return
                     }
@@ -45,6 +46,11 @@ actor threshold {
                 case null return;
                 case (?votes) {
                     if (id == i and active) {
+                        func hopeless((_, yes, no_pre, _) : State) : Bool {
+                            let signers = authorised.size();
+                            let no = no_pre + 1;
+                            2 * no > signers or yes + no >= signers
+                        };
                         prop.state := (not hopeless(prop.state), yes, no + 1, votes);
                         return
                     }
@@ -88,14 +94,6 @@ actor threshold {
     // traps when p is not this actor
     func self(p : Principal) {
         assert p == principalOfActor threshold
-    };
-
-    func passing((_, yes, no, _) : State) : Bool = 2 * yes > authorised.size(); // FIXME!
-
-    func hopeless((_, yes, no_pre, _) : State) : Bool {
-        let signers = authorised.size();
-        let no = no_pre + 1;
-        2 * no > signers or yes + no >= signers
     };
 
     func execute(prop : Prop, (principal, method, blob) : Payload) : async () {
