@@ -27,7 +27,7 @@ actor threshold {
                 case null return;
                 case (?votes) {
                     if (id == i and active) {
-                        prop.state := (active, yes + 1, no, votes); // FIXME: track votes by principal
+                        prop.state := (active, yes + 1, no, votes);
                         if (passing(prop.state)) { /*do not*/ await execute(prop, payload) };
                         return
                     }
@@ -45,7 +45,7 @@ actor threshold {
                 case null return;
                 case (?votes) {
                     if (id == i and active) {
-                        prop.state := (active, yes, no + 1, votes); // FIXME: track votes by principal
+                        prop.state := (not hopeless(prop.state), yes, no + 1, votes);
                         return
                     }
                 }
@@ -91,6 +91,7 @@ actor threshold {
     };
 
     func passing((_, yes : Int, no, _) : State) : Bool = 2 * yes > authorised.size(); // FIXME!
+    func hopeless((_, yes, no : Int, _) : State) : Bool = 2 * no > authorised.size(); // FIXME!
 
     func execute(prop : Prop, (principal, method, blob) : Payload) : async () {
         prop.state := (false, prop.state.1, prop.state.2, prop.state.3);
