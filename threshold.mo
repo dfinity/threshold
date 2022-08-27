@@ -61,6 +61,11 @@ actor threshold {
         authorised := authlist
     };
 
+    public shared query ({caller}) func get_authorised() : async [Principal] {
+        authorise caller;
+        authorised
+    };
+
     type Proposal = { id : Id; state : State; payload : Payload };
     // authorised principals can retrieve proposals
     public shared query ({caller}) func get_proposals() : async [Proposal] {
