@@ -90,8 +90,13 @@ actor threshold {
         assert p == principalOfActor threshold
     };
 
-    func passing((_, yes : Int, no, _) : State) : Bool = 2 * yes > authorised.size(); // FIXME!
-    func hopeless((_, yes, no : Int, _) : State) : Bool = 2 * no > authorised.size(); // FIXME!
+    func passing((_, yes, no, _) : State) : Bool = 2 * yes > authorised.size(); // FIXME!
+
+    func hopeless((_, yes, no_pre, _) : State) : Bool {
+        let signers = authorised.size();
+        let no = no_pre + 1;
+        2 * no > signers or yes + no >= signers
+    };
 
     func execute(prop : Prop, (principal, method, blob) : Payload) : async () {
         prop.state := (false, prop.state.1, prop.state.2, prop.state.3);
