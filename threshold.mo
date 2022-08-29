@@ -64,10 +64,8 @@ actor class(signers : [Principal]) = threshold {
     };
 
     public shared ({caller}) func update(authlist : [Principal]) : async () {
-        // initial setup of principals can be by any principal
-        if (authorised != []) self caller;
-        // TODO: disallow duplicates and long lists
-        authorised := authlist
+        self caller;
+        authorised := sanitiseSigners authlist
     };
 
     public shared query ({caller}) func get_authorised() : async [Principal] {
