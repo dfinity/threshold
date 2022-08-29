@@ -5,12 +5,13 @@ Threshold voting and execution for the IC
 
 _Note_: This is a proof-of-concept (POC) canister, **no security review performed yet**!
 Notable omissions:
-- no single vote check per voter
 - ad-hoc threshold calculation
 - no checks for duplicate proposal ids
-- no checks for duplicate voters in the list
+- no checks for duplicate signers in the authorised list
 - no pruning of retired proposals
 - etc.
+
+See also the [open issues](https://github.com/dfinity/threshold/issues) for this project.
 
 ## What this does
 
