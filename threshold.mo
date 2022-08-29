@@ -1,6 +1,6 @@
 import {Array_tabulate; call_raw; debugPrint; principalOfActor; nat64ToNat; time = nanos1970} = "mo:⛔";
 
-actor class Voter() = threshold {
+actor class(signers : [Principal]) = threshold {
     type Id = Text;
     type Timestamp = Nat;
     type Payload = (Principal, Text, Blob);
@@ -8,7 +8,11 @@ actor class Voter() = threshold {
     type State = (Bool, Nat, Nat, [Vote]);
     type Prop = { id : Id; var state : State; payload : Payload };
 
-    stable var authorised : [Principal] = [];
+    stable var authorised : [Principal] = do {
+        assert signers.size() > 1;
+        // FIXME: no duplicates
+        signers
+    };
     stable var proposals : [Prop] = [];
 
     public shared ({caller}) func register(id : Id, payload : Payload) : async () {
@@ -140,5 +144,11 @@ actor class Voter() = threshold {
             if (p == signer) return null;
         };
         ?prepend((now(), signer), votes);
+    };
+
+    func sanitiseSigners(signers : [Principal]) : [Principal] {
+        assert signers.size() > 1;
+        // FIXME: no duplicates
+        signers
     }
 }
