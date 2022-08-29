@@ -1,6 +1,6 @@
 import {Array_tabulate; call_raw; debugPrint; principalOfActor; nat64ToNat; time = nanos1970} = "mo:⛔";
 
-actor threshold {
+actor class Voter() = threshold {
     type Id = Text;
     type Timestamp = Nat;
     type Payload = (Principal, Text, Blob);
