@@ -15,7 +15,7 @@ actor class(signers : [Principal]) = threshold {
     };
     stable var proposals : [Prop] = [];
 
-    public shared ({caller}) func register(id : Id, payload : Payload) : async () {
+    public shared ({caller}) func submit(id : Id, payload : Payload) : async () {
         authorise caller;
         // TODO: sanitise (no duplicates, etc.)
         let ?votes = vote(caller, []);
