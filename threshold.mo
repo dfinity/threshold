@@ -16,11 +16,12 @@ actor class(signers : [Principal]) = threshold {
     };
     stable var proposals : [Prop] = [];
 
-    public shared ({caller}) func submit(memo : Text, payload : Payload) : async () {
+    public shared ({caller}) func submit(memo : Text, payload : Payload) : async Nat {
         authorise caller;
         serial += 1;
         let ?votes = vote(caller, []);
         proposals := prepend<Prop>({ id = serial; memo; var state = (true, 1, 0, votes, null); payload }, proposals);
+        serial
     };
 
     public shared ({caller}) func accept(id : Id) : async () {
