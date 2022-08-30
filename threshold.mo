@@ -1,12 +1,12 @@
 import {Array_tabulate; call_raw; debugPrint; principalOfActor; nat64ToNat; time = nanos1970} = "mo:⛔";
 
 actor class(signers : [Principal]) = threshold {
-    type Id = Text;
+    type Id = Nat;
     type Timestamp = Nat;
     type Payload = (Principal, Text, Blob);
     type Vote = (Timestamp, Principal);
     type State = (Bool, Nat, Nat, [Vote], ?Blob);
-    type Prop = { id : Id; var state : State; payload : Payload };
+    type Prop = { id : Id; memo : Text; var state : State; payload : Payload };
 
     stable var serial = 0;
     stable var authorised : [Principal] = do {
@@ -16,12 +16,11 @@ actor class(signers : [Principal]) = threshold {
     };
     stable var proposals : [Prop] = [];
 
-    public shared ({caller}) func submit(id : Id, payload : Payload) : async () {
+    public shared ({caller}) func submit(memo : Text, payload : Payload) : async () {
         authorise caller;
-        // TODO: sanitise (no duplicates, etc.)
         serial += 1;
         let ?votes = vote(caller, []);
-        proposals := prepend<Prop>({ id; var state = (true, 1, 0, votes, null); payload }, proposals);
+        proposals := prepend<Prop>({ id = serial; memo; var state = (true, 1, 0, votes, null); payload }, proposals);
     };
 
     public shared ({caller}) func accept(id : Id) : async () {
@@ -75,13 +74,17 @@ actor class(signers : [Principal]) = threshold {
         authorised
     };
 
-    type Proposal = { id : Id; state : State; payload : Payload };
+    type Proposal = { id : Id; memo : Text; state : State; payload : Payload };
     // authorised principals can retrieve proposals
     public shared query ({caller}) func get_proposals() : async [Proposal] {
         authorise caller;
         // `moc` v0.7: Array_tabulate<Proposal>(proposals.size(), func n = { proposals[n] with state = proposals[n].state })
         Array_tabulate<Proposal>(proposals.size(),
-                                 func n = { id = proposals[n].id; state = proposals[n].state; payload = proposals[n].payload })
+                                 func n = {
+                                     id = proposals[n].id;
+                                     memo = proposals[n].memo;
+                                     state = proposals[n].state;
+                                     payload = proposals[n].payload })
     };
 
     // traps when p is not in the `authorised` list
