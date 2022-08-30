@@ -34,7 +34,9 @@ _Note_: above the first principal is the `dfx` identity, so that one can vote fr
 
 After the installation changes to the signers list must be done by proposals.
 
-_CAVEAT_: (REALLY?, check this!) if the initial voter list doesn't contain `threshold`'s principal (`dfx canister id threshold`), self-updates will be rejected as demonstrated in the next steps...
+_CAVEAT_: if the (initial) signers list doesn't contain `threshold`'s
+principal (`dfx canister id threshold`), certain self-updates will be
+rejected as demonstrated in the next step...
 
 ## Example Proposal
 
