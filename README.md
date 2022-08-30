@@ -7,7 +7,6 @@ _Note_: This is a proof-of-concept (POC) canister, **no security review performe
 Notable omissions:
 - ad-hoc threshold calculation
 - no checks for duplicate proposal ids
-- no checks for duplicate signers in the authorised list
 - no pruning of retired proposals
 - etc.
 
@@ -17,7 +16,7 @@ See also the [open issues](https://github.com/dfinity/threshold/issues) for this
 
 - one can add a collection of voters (principals)
 - one can add new proposals (by ID and action, an action being the destination canister, invoked method and argument payload)
-- voters can accept/deny
+- signers can vote to accept/deny (but can't flip the vote)
 - when sufficient votes for a proposal have gathered, the action gets executed and the proposal retired
 
 ## Setting up the signers list
