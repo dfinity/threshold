@@ -87,6 +87,20 @@ actor class(signers : [Principal]) = threshold {
                                      payload = proposals[n].payload })
     };
 
+    public shared query ({caller}) func get_proposal(id : Id) : async ?Proposal {
+        authorise caller;
+        // `moc` v0.7: Array_tabulate<Proposal>(proposals.size(), func n = { proposals[n] with state = proposals[n].state })
+        for (p in proposals.vals()) {
+            if (p.id == id) return ?{
+                id = p.id;
+                memo = p.memo;
+                state = p.state;
+                payload = p.payload
+            }
+        };
+        null
+    };
+
     // traps when p is not in the `authorised` list
     func authorise(p : Principal) {
         for (a in authorised.vals()) {
