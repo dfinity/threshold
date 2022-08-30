@@ -8,6 +8,7 @@ actor class(signers : [Principal]) = threshold {
     type State = (Bool, Nat, Nat, [Vote]);
     type Prop = { id : Id; var state : State; payload : Payload };
 
+    stable var serial = 0;
     stable var authorised : [Principal] = do {
         assert signers.size() > 1;
         // FIXME: no duplicates
@@ -18,6 +19,7 @@ actor class(signers : [Principal]) = threshold {
     public shared ({caller}) func submit(id : Id, payload : Payload) : async () {
         authorise caller;
         // TODO: sanitise (no duplicates, etc.)
+        serial += 1;
         let ?votes = vote(caller, []);
         proposals := prepend<Prop>({ id; var state = (true, 1, 0, votes); payload }, proposals);
     };
