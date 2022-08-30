@@ -146,7 +146,17 @@ actor class(signers : [Principal]) = threshold {
 
     func sanitiseSigners(signers : [Principal]) : [Principal] {
         assert signers.size() > 1;
-        // FIXME: no duplicates
+        // no duplicates allowed
+        var i = signers.size() - 1;
+        while (i > 0) {
+            var j = i - 1;
+            label inner loop {
+                assert signers[i] != signers[j];
+                if (j == 0) break inner;
+                j -= 1
+            };
+            i -= 1
+        };
         signers
     }
 }
