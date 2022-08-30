@@ -25,8 +25,7 @@ When the `threshold` canister gets deployed (or reinstalled), the
 initial signers list must be specified
 
 ``` shell
-dfx deploy threshold --argument='(vec {principal "'$(dfx identity
-get-principal)'"; principal "2vxsx-fae"})'
+dfx deploy threshold --argument='(vec {principal "'$(dfx identity get-principal)'"; principal "2vxsx-fae"})'
 ```
 
 _Note_: above the first principal is the `dfx` identity, so that one can vote from the command line. The second identity is the Candid GUI's, so that it can also be used.
