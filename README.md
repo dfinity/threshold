@@ -20,18 +20,21 @@ See also the [open issues](https://github.com/dfinity/threshold/issues) for this
 - voters can accept/deny
 - when sufficient votes for a proposal have gathered, the action gets executed and the proposal retired
 
-## Setting up the voter list
+## Setting up the signers list
+
+When the `threshold` canister gets deployed (or reinstalled), the
+initial signers list must be specified
 
 ``` shell
-dfx canister call threshold update 'vec {principal "'$(dfx identity get-principal)'"; principal "2vxsx-fae"}'
+dfx deploy threshold --argument='(vec {principal "'$(dfx identity
+get-principal)'"; principal "2vxsx-fae"})'
 ```
 
 _Note_: above the first principal is the `dfx` identity, so that one can vote from the command line. The second identity is the Candid GUI's, so that it can also be used.
 
-The first call to a fresh (after (re-)install) `threshold` canister can set the list of voter principals.
-After that this must be done by proposals.
+After the installation changes to the signers list must be done by proposals.
 
-_CAVEAT_: if the initial voter list doesn't contain `threshold`'s principal (`dfx canister id threshold`), self-updates will be rejected as demonstrated in the next steps...
+_CAVEAT_: (REALLY?, check this!) if the initial voter list doesn't contain `threshold`'s principal (`dfx canister id threshold`), self-updates will be rejected as demonstrated in the next steps...
 
 ## Example Proposal
 
