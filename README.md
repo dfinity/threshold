@@ -44,7 +44,7 @@ One can send an example proposal to `threshold` by
 ``` shell
 dfx canister call threshold submit '("haha", record {principal "rrkah-fqaaa-aaaaa-aaaaq-cai"; "accept"; vec {68; 73; 68; 76; 0; 1; 113; 4; 104; 97; 104; 97}})'
 ```
-This will prepare the "haha" proposal which  when executed will `accept '"haha"'` on itself.
+This will prepare the "haha" proposal which — when executed — will `accept '"haha"'` on itself.
 You'll see in the replica log that the proposal got executed by seeing
 ```
 [Canister rrkah-fqaaa-aaaaa-aaaaq-cai] ("cannot authorise", rrkah-fqaaa-aaaaa-aaaaq-cai)
