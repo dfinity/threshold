@@ -5,7 +5,7 @@ actor class(signers : [Principal]) = threshold {
     type Timestamp = Nat;
     type Payload = (Principal, Text, Blob);
     type Vote = (Timestamp, Principal);
-    type State = (Bool, Nat, Nat, [Vote]);
+    type State = (Bool, Nat, Nat, [Vote], ?Blob);
     type Prop = { id : Id; var state : State; payload : Payload };
 
     stable var serial = 0;
@@ -21,20 +21,20 @@ actor class(signers : [Principal]) = threshold {
         // TODO: sanitise (no duplicates, etc.)
         serial += 1;
         let ?votes = vote(caller, []);
-        proposals := prepend<Prop>({ id; var state = (true, 1, 0, votes); payload }, proposals);
+        proposals := prepend<Prop>({ id; var state = (true, 1, 0, votes, null); payload }, proposals);
     };
 
     public shared ({caller}) func accept(id : Id) : async () {
         authorise caller;
         for (prop in proposals.vals()) {
             let { id = i; payload } = prop;
-            let (active, yes, no, votes) = prop.state;
+            let (active, yes, no, votes, res) = prop.state;
             switch (vote(caller, votes)) {
                 case null return;
                 case (?votes) {
                     if (id == i and active) {
-                        prop.state := (active, yes + 1, no, votes);
-                        func passing((_, yes, no, _) : State) : Bool = 2 * yes > authorised.size(); // FIXME!
+                        prop.state := (active, yes + 1, no, votes, res);
+                        func passing((_, yes, no, _, _) : State) : Bool = 2 * yes > authorised.size(); // FIXME!
                         if (passing(prop.state)) { /*do not*/ await execute(prop, payload) };
                         return
                     }
@@ -47,17 +47,17 @@ actor class(signers : [Principal]) = threshold {
         authorise caller;
         for (prop in proposals.vals()) {
             let { id = i; payload = (principal, method, blob) } = prop;
-            let (active, yes, no, votes) = prop.state;
+            let (active, yes, no, votes, res) = prop.state;
             switch (vote(caller, votes)) {
                 case null return;
                 case (?votes) {
                     if (id == i and active) {
-                        func hopeless((_, yes, no_pre, _) : State) : Bool {
+                        func hopeless((_, yes, no_pre, _, _) : State) : Bool {
                             let signers = authorised.size();
                             let no = no_pre + 1;
                             2 * no > signers or yes + no >= signers
                         };
-                        prop.state := (not hopeless(prop.state), yes, no + 1, votes);
+                        prop.state := (not hopeless(prop.state), yes, no + 1, votes, res);
                         return
                     }
                 }
@@ -101,7 +101,7 @@ actor class(signers : [Principal]) = threshold {
     };
 
     func execute(prop : Prop, (principal, method, blob) : Payload) : async () {
-        prop.state := (false, prop.state.1, prop.state.2, prop.state.3);
+        prop.state := (false, prop.state.1, prop.state.2, prop.state.3, prop.state.4);
         // send the payload
         switch (is_selfupgrade(principal, method, blob)) {
             case (?params) {
@@ -111,7 +111,8 @@ actor class(signers : [Principal]) = threshold {
                      ic00.install_code params
                  };
             case _ {
-                     let _ = await call_raw(principal, method, blob)
+                let res = await call_raw(principal, method, blob);
+                prop.state := (prop.state.0, prop.state.1, prop.state.2, prop.state.3, ?res);
             }
         }
     };
