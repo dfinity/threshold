@@ -67,7 +67,7 @@ actor class(signers : [Principal]) = threshold {
 
     public shared ({caller}) func prune() : async () {
         //self caller; TODO
-        proposals := filter(func (p : Prop) : Bool = p.state.0, proposals);
+        proposals := filter(func (p : Prop) : Bool = p.state.0, proposals)
     };
 
     public shared ({caller}) func update(authlist : [Principal]) : async () {
@@ -144,8 +144,12 @@ actor class(signers : [Principal]) = threshold {
     func prepend<A>(a : A, as : [A]) : [A] =
         Array_tabulate<A>(as.size() + 1, func i = if (i == 0) a else as[i - 1]);
 
-    func filter<A>(p : A -> Bool, as : [A]) : [A] =
-             as; // FIXME
+    func filter<A>(p : A -> Bool, as : [A]) : [A] {
+        var hits = 0;
+        let indices = Array_tabulate(as.size(),
+                                     func(i : Nat) : Nat = if (p(as[i])) { let i = hits; hits += 1; i } else hits);
+        Array_tabulate<A>(hits, func (i : Nat) : A = as[indices[i]])
+    };
 
     // helpers
     type InstallParams = {
