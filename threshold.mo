@@ -65,6 +65,11 @@ actor class(signers : [Principal]) = threshold {
         }
     };
 
+    public shared ({caller}) func prune() : async () {
+        //self caller; TODO
+        proposals := filter(func (p : Prop) : Bool = p.state.0, proposals);
+    };
+
     public shared ({caller}) func update(authlist : [Principal]) : async () {
         self caller;
         authorised := sanitiseSigners authlist
@@ -139,6 +144,10 @@ actor class(signers : [Principal]) = threshold {
     func prepend<A>(a : A, as : [A]) : [A] =
         Array_tabulate<A>(as.size() + 1, func i = if (i == 0) a else as[i - 1]);
 
+    func filter<A>(p : A -> Bool, as : [A]) : [A] =
+             as; // FIXME
+
+    // helpers
     type InstallParams = {
         mode : { #install; #reinstall; #upgrade };
         canister_id : Principal;
