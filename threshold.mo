@@ -1,4 +1,4 @@
-import {Array_tabulate; call_raw; debugPrint; principalOfActor; nat64ToNat; time = nanos1970} = "mo:⛔";
+import {Array_tabulate; Array_init; call_raw; debugPrint; principalOfActor; nat64ToNat; time = nanos1970} = "mo:⛔";
 
 actor class(signers : [Principal]) = threshold {
     type Id = Nat;
@@ -11,7 +11,19 @@ actor class(signers : [Principal]) = threshold {
     stable var serial = 0;
     stable var authorised : [Principal] = do {
         assert signers.size() > 1;
-        // FIXME: no duplicates
+        // no duplicates allowed
+        let good = Array_init<?Principal>(signers.size(), null);
+        var occup = 0;
+        for (s0 in signers.vals()) {
+            let s = ?s0;
+            var j = 0;
+            while (j < occup) {
+                assert s != good[j];
+                j += 1
+            };
+            good[occup] := s;
+            occup += 1
+        };
         signers
     };
     stable var proposals : [Prop] = [];
@@ -181,15 +193,17 @@ actor class(signers : [Principal]) = threshold {
     func sanitiseSigners(signers : [Principal]) : [Principal] {
         assert signers.size() > 1;
         // no duplicates allowed
-        var i = signers.size() - 1;
-        while (i > 0) {
-            var j = i - 1;
-            label inner loop {
-                assert signers[i] != signers[j];
-                if (j == 0) break inner;
-                j -= 1
+        let good = Array_init<?Principal>(signers.size(), null);
+        var occup = 0;
+        for (s0 in signers.vals()) {
+            let s = ?s0;
+            var j = 0;
+            while (j < occup) {
+                assert s != good[j];
+                j += 1
             };
-            i -= 1
+            good[occup] := s;
+            occup += 1
         };
         signers
     }
