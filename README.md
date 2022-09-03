@@ -6,7 +6,6 @@ Threshold voting and execution for the IC
 _Note_: This is a proof-of-concept (POC) canister, **no security review performed yet**!
 Notable omissions:
 - ad-hoc threshold calculation
-- no checks for duplicate proposal ids
 - no pruning of retired proposals
 - etc.
 
