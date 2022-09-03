@@ -6,7 +6,6 @@ Threshold voting and execution for the IC
 _Note_: This is a proof-of-concept (POC) canister, **no security review performed yet**!
 Notable omissions:
 - ad-hoc threshold calculation
-- no pruning of retired proposals
 - etc.
 
 See also the [open issues](https://github.com/dfinity/threshold/issues) for this project.
