@@ -78,7 +78,7 @@ actor class(signers : [Principal]) = threshold {
     };
 
     public shared ({caller}) func prune() : async () {
-        //self caller; TODO
+        self caller;
         proposals := filter(func (p : Prop) : Bool = p.state.0, proposals)
     };
 
