@@ -158,9 +158,11 @@ actor class(signers : [Principal]) = threshold {
 
     func filter<A>(p : A -> Bool, as : [A]) : [A] {
         var hits = 0;
-        let indices = Array_tabulate(as.size(),
-                                     func(i : Nat) : Nat = if (p(as[i])) { let i = hits; hits += 1; i } else hits);
-        Array_tabulate<A>(hits, func (i : Nat) : A = as[indices[i]])
+        let good = Array_init<?A>(as.size(), null);
+        for (a in as.vals()) {
+            if (p(a)) { good[hits] := ?a; hits += 1 };
+        };
+        Array_tabulate<A>(hits, func(i) : A { let ?h = good[i]; h });
     };
 
     // helpers
