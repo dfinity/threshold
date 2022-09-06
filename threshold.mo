@@ -107,9 +107,8 @@ actor class(signers : [Principal]) = threshold {
 
     public shared query ({caller}) func get_proposal(id : Id) : async ?Proposal {
         authorise caller;
-        // `moc` v0.7: Array_tabulate<Proposal>(proposals.size(), func n = { proposals[n] with state = proposals[n].state })
         for (p in proposals.vals()) {
-            if (p.id == id) return ?{
+            if (p.id == id) return ?{ // `moc` v0.7: p with state = p.state
                 id = p.id;
                 memo = p.memo;
                 state = p.state;
