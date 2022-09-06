@@ -82,7 +82,7 @@ actor class(signers : [Principal]) = threshold {
         proposals := filter(func (p : Prop) : Bool = p.state.0, proposals)
     };
 
-    public shared ({caller}) func update(authlist : [Principal]) : async () {
+    public shared ({caller}) func set_signers(authlist : [Principal]) : async () {
         self caller;
         authorised := sanitiseSigners authlist
     };
