@@ -47,11 +47,12 @@ You'll see in the replica log that the proposal got executed by seeing
 ```
 [Canister rrkah-fqaaa-aaaaa-aaaaq-cai] ("cannot authorise", rrkah-fqaaa-aaaaa-aaaaq-cai)
 ```
-because the canister is not authorised to vote.
+because the canister itself is not authorised to vote.
 
-If you have set up the voters array to contain 2 principals, then you have to vote twice to see that error:
+If you have set up the signers list to contain 2 principals, then you
+have to vote from the other canister too to see that error:
 ``` shell
-dfx canister call threshold accept '"haha"'
+dfx identity use <other>
 dfx canister call threshold accept '"haha"'
 ```
 
