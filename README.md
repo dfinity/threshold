@@ -10,12 +10,14 @@ Notable omissions:
 
 See also the [open issues](https://github.com/dfinity/threshold/issues) for this project.
 
-## What this does
+## What this canister does
 
-- one can add a collection of voters (principals)
-- one can add new proposals (by ID and action, an action being the destination canister, invoked method and argument payload)
+- one can initially add a collection of signers or voters (which are principals)
+- one can add new proposals (by mnemonic and action, an action being the destination canister, invoked method and argument payload)
 - signers can vote to accept/deny (but can't flip the vote)
-- when sufficient votes for a proposal have gathered, the action gets executed and the proposal retired
+- when sufficient votes for a proposal have gathered, the action gets
+  executed and the proposal retired
+- retired proposals can be pruned
 
 ## Setting up the signers list
 
