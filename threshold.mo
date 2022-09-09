@@ -87,7 +87,7 @@ actor class(signers : [Principal]) = threshold {
         authorised := sanitiseSigners authlist
     };
 
-    public shared query ({caller}) func get_authorised() : async [Principal] {
+    public shared query ({caller}) func get_signers() : async [Principal] {
         authorise caller;
         authorised
     };
