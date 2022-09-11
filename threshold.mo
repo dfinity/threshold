@@ -96,24 +96,13 @@ actor class(signers : [Principal]) = threshold {
     // authorised principals can retrieve proposals
     public shared query ({caller}) func get_proposals() : async [Proposal] {
         authorise caller;
-        // `moc` v0.7: Array_tabulate<Proposal>(proposals.size(), func n = { proposals[n] with state = proposals[n].state })
-        Array_tabulate<Proposal>(proposals.size(),
-                                 func n = {
-                                     id = proposals[n].id;
-                                     memo = proposals[n].memo;
-                                     state = proposals[n].state;
-                                     payload = proposals[n].payload })
+        Array_tabulate<Proposal>(proposals.size(), func n = { proposals[n] with state = proposals[n].state })
     };
 
     public shared query ({caller}) func get_proposal(id : Id) : async ?Proposal {
         authorise caller;
         for (p in proposals.vals()) {
-            if (p.id == id) return ?{ // `moc` v0.7: p with state = p.state
-                id = p.id;
-                memo = p.memo;
-                state = p.state;
-                payload = p.payload
-            }
+            if (p.id == id) return ?{ p with state = p.state }
         };
         null
     };
