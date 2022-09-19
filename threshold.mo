@@ -41,10 +41,9 @@ actor class(signers : [Principal]) = threshold {
         for (prop in proposals.vals()) {
             let { id = i; payload } = prop;
             let (active, yes, no, votes, res) = prop.state;
-            switch (vote(caller, votes)) {
-                case null ();
-                case (?votes) {
-                    if (id == i and active) {
+            switch (active, vote(caller, votes)) {
+                case (true, ?votes) {
+                    if (id == i) {
                         prop.state := (active, yes + 1, no, votes, res);
                         func passing((_, yes, no, _, _) : State) : Bool = 2 * yes > authorised.size();
                         if (passing(prop.state)) {
@@ -55,7 +54,8 @@ actor class(signers : [Principal]) = threshold {
                         };
                         return
                     }
-                }
+                };
+                case _ ()
             }
         };
     };
@@ -65,10 +65,9 @@ actor class(signers : [Principal]) = threshold {
         for (prop in proposals.vals()) {
             let { id = i; payload = (principal, method, blob) } = prop;
             let (active, yes, no, votes, res) = prop.state;
-            switch (vote(caller, votes)) {
-                case null ();
-                case (?votes) {
-                    if (id == i and active) {
+            switch (active, vote(caller, votes)) {
+                case (true, ?votes) {
+                    if (id == i) {
                         func hopeless((_, _, no_pre, _, _) : State) : Bool {
                             let signers = authorised.size();
                             let no = no_pre + 1;
@@ -77,7 +76,8 @@ actor class(signers : [Principal]) = threshold {
                         prop.state := (not hopeless(prop.state), yes, no + 1, votes, res);
                         return
                     }
-                }
+                };
+                case _ ()
             }
         }
     };
