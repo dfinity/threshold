@@ -42,7 +42,7 @@ actor class(signers : [Principal]) = threshold {
             let { id = i; payload } = prop;
             let (active, yes, no, votes, res) = prop.state;
             switch (vote(caller, votes)) {
-                case null return;
+                case null ();
                 case (?votes) {
                     if (id == i and active) {
                         prop.state := (active, yes + 1, no, votes, res);
@@ -61,7 +61,7 @@ actor class(signers : [Principal]) = threshold {
             let { id = i; payload = (principal, method, blob) } = prop;
             let (active, yes, no, votes, res) = prop.state;
             switch (vote(caller, votes)) {
-                case null return;
+                case null ();
                 case (?votes) {
                     if (id == i and active) {
                         func hopeless((_, yes, no_pre, _, _) : State) : Bool {
