@@ -46,7 +46,7 @@ actor class(signers : [Principal]) = threshold {
                 case (?votes) {
                     if (id == i and active) {
                         prop.state := (active, yes + 1, no, votes, res);
-                        func passing((_, yes, no, _, _) : State) : Bool = 2 * yes > authorised.size(); // FIXME!
+                        func passing((_, yes, no, _, _) : State) : Bool = 2 * yes > authorised.size();
                         if (passing(prop.state)) {
                             // retire the proposal
                             prop.state := (false, prop.state.1, prop.state.2, prop.state.3, prop.state.4);
