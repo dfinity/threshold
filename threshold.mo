@@ -47,7 +47,12 @@ actor class(signers : [Principal]) = threshold {
                     if (id == i and active) {
                         prop.state := (active, yes + 1, no, votes, res);
                         func passing((_, yes, no, _, _) : State) : Bool = 2 * yes > authorised.size(); // FIXME!
-                        if (passing(prop.state)) { /*do not*/ await execute(prop, payload) };
+                        if (passing(prop.state)) {
+                            // retire the proposal
+                            prop.state := (false, prop.state.1, prop.state.2, prop.state.3, prop.state.4);
+                            // execute payload and keep result in the state
+                            await execute(prop, payload)
+                        };
                         return
                     }
                 }
@@ -123,8 +128,8 @@ actor class(signers : [Principal]) = threshold {
         assert p == principalOfActor threshold
     };
 
-    func execute(prop : Prop, (principal, method, blob) : Payload) : async () {
-        prop.state := (false, prop.state.1, prop.state.2, prop.state.3, prop.state.4);
+    // internal helper
+    private func execute(prop : Prop, (principal, method, blob) : Payload) : async () {
         // send the payload
         switch (is_selfupgrade(principal, method, blob)) {
             case (?params) {
