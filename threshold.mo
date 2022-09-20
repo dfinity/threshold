@@ -41,10 +41,10 @@ actor class(signers : [Principal]) = threshold {
         authorise caller;
         for (prop in proposals.vals()) {
             let { id = i; payload } = prop;
-            let { active; yes; votes } = prop.state;
-            switch (active, vote(caller, votes)) {
-                case (true, ?votes) {
-                    if (id == i) {
+            if (id == i) {
+                let { active; yes; votes } = prop.state;
+                switch (active, vote(caller, votes)) {
+                    case (true, ?votes) {
                         prop.state := { prop.state with yes = yes + 1; votes };
                         func passing( { yes } : State) : Bool = 2 * yes > authorised.size();
                         if (passing(prop.state)) {
@@ -54,28 +54,28 @@ actor class(signers : [Principal]) = threshold {
                             await execute(prop, payload)
                         };
                         return
-                    }
-                };
-                case _ ()
+                    };
+                    case _ ()
+                }
             }
-        };
+        }
     };
 
     public shared ({caller}) func reject(id : Id) : async () {
         authorise caller;
         for (prop in proposals.vals()) {
-            let { id = i; payload = (principal, method, blob) } = prop;
-            let { active; no; votes } = prop.state;
-            switch (active, vote(caller, votes)) {
-                case (true, ?votes) {
-                    if (id == i) {
-                        prop.state := { prop.state with no = no + 1; votes };
+            let { id = i } = prop;
+            if (id == i) {
+                let { active; no; votes } = prop.state;
+                switch (active, vote(caller, votes)) {
+                    case (true, ?votes) {
+                        let state = { prop.state with no = no + 1; votes };
                         func hopeless({ no } : State) : Bool = 2 * no >= authorised.size();
-                        prop.state := { prop.state with active = not hopeless(prop.state) };
+                        prop.state := { state with active = not hopeless state };
                         return
-                    }
-                };
-                case _ ()
+                    };
+                    case _ ()
+                }
             }
         }
     };
