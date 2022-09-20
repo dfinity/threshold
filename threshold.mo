@@ -6,7 +6,7 @@ actor class(signers : [Principal]) = threshold {
     type Payload = (Principal, Text, Blob);
     type Vote = (Timestamp, Principal);
     type State = { active : Bool; yes : Nat; no : Nat; votes : [Vote]; result : ?Blob };
-    type Prop = { id : Id; memo : Text; var state : State; payload : Payload };
+    type Prop = { id : Id; memo : Text; signers : [Principal]; var state : State; payload : Payload };
 
     stable var serial = 0;
     stable var authorised : [Principal] = do {
@@ -33,20 +33,20 @@ actor class(signers : [Principal]) = threshold {
         serial += 1;
         let ?votes = vote(caller, []);
         let state = { active = true; yes = 1; no = 0; votes; result = null };
-        proposals := prepend<Prop>({ id = serial; memo; var state; payload }, proposals);
+        proposals := prepend<Prop>({ id = serial; memo; signers = authorised; var state; payload }, proposals);
         serial
     };
 
     public shared ({caller}) func accept(id : Id) : async () {
-        authorise caller;
         for (prop in proposals.vals()) {
-            let { id = i; payload } = prop;
+            let { id = i; payload; signers } = prop;
             if (id == i) {
+                authoriseAccording(caller, signers);
                 let { active; yes; votes } = prop.state;
                 switch (active, vote(caller, votes)) {
                     case (true, ?votes) {
                         prop.state := { prop.state with yes = yes + 1; votes };
-                        func passing( { yes } : State) : Bool = 2 * yes > authorised.size();
+                        func passing( { yes } : State) : Bool = 2 * yes > signers.size();
                         if (passing(prop.state)) {
                             // retire the proposal
                             prop.state := { prop.state with active = false };
@@ -62,15 +62,15 @@ actor class(signers : [Principal]) = threshold {
     };
 
     public shared ({caller}) func reject(id : Id) : async () {
-        authorise caller;
         for (prop in proposals.vals()) {
-            let { id = i } = prop;
+            let { id = i; signers } = prop;
             if (id == i) {
+                authoriseAccording(caller, signers);
                 let { active; no; votes } = prop.state;
                 switch (active, vote(caller, votes)) {
                     case (true, ?votes) {
                         let state = { prop.state with no = no + 1; votes };
-                        func hopeless({ no } : State) : Bool = 2 * no >= authorised.size();
+                        func hopeless({ no } : State) : Bool = 2 * no >= signers.size();
                         prop.state := { state with active = not hopeless state };
                         return
                     };
@@ -103,16 +103,18 @@ actor class(signers : [Principal]) = threshold {
     };
 
     public shared ({caller}) func get_proposal(id : Id) : async ?Proposal {
-        authorise caller;
         for (p in proposals.vals()) {
-            if (p.id == id) return ?{ p with state = p.state }
+            if (p.id == id) {
+                authoriseAccording(caller, p.signers);
+                return ?{ p with state = p.state }
+            }
         };
         null
     };
 
-    // traps when p is not in the `authorised` list
-    func authorise(p : Principal) {
-        for (a in authorised.vals()) {
+    // traps when p is not in the given principals list
+    func authoriseAccording(p : Principal, according : [Principal]) {
+        for (a in according.vals()) {
             if (p == a) return
         };
         debug {
@@ -120,6 +122,9 @@ actor class(signers : [Principal]) = threshold {
         };
         assert false;
     };
+
+    // traps when p is not in the `authorised` list
+    func authorise(p : Principal) = authoriseAccording(p, authorised);
 
     // traps when p is not this actor
     func self(p : Principal) {
