@@ -69,12 +69,9 @@ actor class(signers : [Principal]) = threshold {
             switch (active, vote(caller, votes)) {
                 case (true, ?votes) {
                     if (id == i) {
-                        func hopeless({ no = no_pre } : State) : Bool {
-                            let signers = authorised.size();
-                            let no = no_pre + 1;
-                            2 * no >= signers
-                        };
-                        prop.state := { prop.state with active = not hopeless(prop.state); no = no + 1; votes };
+                        prop.state := { prop.state with no = no + 1; votes };
+                        func hopeless({ no } : State) : Bool = 2 * no >= authorised.size();
+                        prop.state := { prop.state with active = not hopeless(prop.state) };
                         return
                     }
                 };
