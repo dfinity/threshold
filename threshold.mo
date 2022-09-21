@@ -8,8 +8,8 @@ actor class(signers : [Principal]) = threshold {
     type State = { active : Bool; yes : Nat; no : Nat; votes : [Vote]; result : ?Blob };
     type Prop = { id : Id; memo : Text; signers : [Principal]; var state : State; payload : Payload };
 
-    stable var serial = 0;
-    stable var authorised : [Principal] = do {
+    // criterion for valid signers
+    func sanitiseSigners(signers : [Principal]) : [Principal] {
         assert signers.size() > 1;
         // no duplicates allowed
         let good = Array_init<?Principal>(signers.size(), null);
@@ -26,6 +26,9 @@ actor class(signers : [Principal]) = threshold {
         };
         signers
     };
+
+    stable var serial = 0;
+    stable var authorised : [Principal] = sanitiseSigners signers;
     stable var proposals : [Prop] = [];
 
     public shared ({caller}) func submit(memo : Text, payload : Payload) : async Nat {
@@ -186,23 +189,5 @@ actor class(signers : [Principal]) = threshold {
             if (p == signer) return null;
         };
         ?prepend((now(), signer), votes);
-    };
-
-    func sanitiseSigners(signers : [Principal]) : [Principal] {
-        assert signers.size() > 1;
-        // no duplicates allowed
-        let good = Array_init<?Principal>(signers.size(), null);
-        var occup = 0;
-        for (s0 in signers.vals()) {
-            let s = ?s0;
-            var j = 0;
-            while (j < occup) {
-                assert s != good[j];
-                j += 1
-            };
-            good[occup] := s;
-            occup += 1
-        };
-        signers
     }
 }
