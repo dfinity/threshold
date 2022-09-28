@@ -1,12 +1,10 @@
 # threshold
 Threshold voting and execution for the IC
 
-## Proof of Concept
+## Beta quality
 
-_Note_: This is a proof-of-concept (POC) canister, **no security review performed yet**!
-Notable omissions:
-- ad-hoc threshold calculation
-- etc.
+_Note_: This canister is ot yet production quality, mostly due to a
+missing test suite, however **an initial security review has been performed**.
 
 See also the [open issues](https://github.com/dfinity/threshold/issues) for this project.
 
