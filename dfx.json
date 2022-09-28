@@ -16,6 +16,12 @@
     "local": {
       "bind": "127.0.0.1:8000",
       "type": "ephemeral"
+    },
+    "testnet": {
+      "providers": [
+        "https://nnsdapp.dfinity.network"
+      ],
+      "type": "persistent"
     }
   },
   "version": 1
