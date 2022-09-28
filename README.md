@@ -12,7 +12,7 @@ See also the [open issues](https://github.com/dfinity/threshold/issues) for this
 
 ## What this canister does
 
-- one can initially add a collection of signers or voters (which are principals)
+- one can initially set up the canister with a collection of signers or voters (which are principals)
 - one can add new proposals (by mnemonic and action, an action being the destination canister, invoked method and argument payload)
 - signers can vote to accept/deny (but can't flip the vote)
 - when sufficient votes for a proposal have gathered, the action gets
@@ -40,10 +40,10 @@ rejected as demonstrated in the next step...
 
 One can send an example proposal to `threshold` by
 ``` shell
-dfx canister call threshold submit '("haha", record {principal "rrkah-fqaaa-aaaaa-aaaaq-cai"; "accept"; vec {68; 73; 68; 76; 0; 1; 113; 4; 104; 97; 104; 97}})'
+dfx canister call threshold submit '("haha", record {principal "rrkah-fqaaa-aaaaa-aaaaq-cai"; "accept"; vec {68; 73; 68; 76; 0; 1; 125; 1}})'
 ```
-This will prepare the "haha" proposal which — when executed — will `accept '"haha"'` on itself.
-You'll see in the replica log that the proposal got executed by seeing
+This will prepare the "haha" proposal (with Id `1`) which — when executed — will `accept '1'` on itself.
+You'll see in the replica log that the proposal got executed by observing
 ```
 [Canister rrkah-fqaaa-aaaaa-aaaaq-cai] ("cannot authorise", rrkah-fqaaa-aaaaa-aaaaq-cai)
 ```
@@ -53,7 +53,7 @@ If you have set up the signers list to contain 2 principals, then you
 have to vote from the other canister too to see that error:
 ``` shell
 dfx identity use <other>
-dfx canister call threshold accept '"haha"'
+dfx canister call threshold accept 1
 ```
 
 ## Self-upgrade proposal
