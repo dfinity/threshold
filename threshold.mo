@@ -109,7 +109,7 @@ actor class(signers : [Principal]) = threshold {
         var toGo : Int = switch count { case null defaultCount; case (?c) c };
         func onPage(p : Proposal) : Bool {
             let include = toGo > 0;
-            let checked = switch start { case (?s) { include and p.id >= s }; case _ include };
+            let checked = switch start { case (?s) { include and p.id <= s }; case _ include };
             if checked { toGo -= 1 };
             checked
         };
