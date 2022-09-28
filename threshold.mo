@@ -99,8 +99,10 @@ actor class(signers : [Principal]) = threshold {
     };
 
     type Proposal = { id : Id; memo : Text; state : State; payload : Payload };
-    // authorised principals can retrieve proposals
-    public shared ({caller}) func get_proposals() : async [Proposal] {
+    // authorised principals can retrieve proposals (in reverse creation order)
+    // `start` (when given) specifies the newest proposal the caller is interested in
+    // `count` (when given) specifies the number of proposals returned (defaults to 50)
+    public shared ({caller}) func get_proposals({ start : ?Id; count : ?Nat }) : async [Proposal] {
         authorise caller;
         Array_tabulate<Proposal>(proposals.size(), func n = { proposals[n] with state = proposals[n].state })
     };
