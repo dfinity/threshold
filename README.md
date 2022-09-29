@@ -40,7 +40,7 @@ One can send an example proposal to `threshold` by
 ``` shell
 dfx canister call threshold submit '("haha", record {principal "rrkah-fqaaa-aaaaa-aaaaq-cai"; "accept"; vec {68; 73; 68; 76; 0; 1; 125; 1}})'
 ```
-This will prepare the "haha" proposal (with Id `1`) which — when executed — will `accept '1'` on itself.
+This will prepare the "haha" proposal (with ID `1`) which — when executed — will `accept '1'` on itself.
 You'll see in the replica log that the proposal got executed by observing
 ```
 [Canister rrkah-fqaaa-aaaaa-aaaaq-cai] ("cannot authorise", rrkah-fqaaa-aaaaa-aaaaq-cai)
@@ -87,6 +87,49 @@ _Note_: if you see something else, you have probably forgot to set `threshold` t
 
 The stable memory of `threshold` is untouched by `counter`, so a subsequent `dfx deploy`
 will restore it to a working state.
+
+## Getting information out
+
+There are only a few getters in the canister
+- get the current signers' list
+- get the (subset of) proposals
+
+Both are currently defined as update methods, to completely enforce
+concensus on the replies. (They used to be be queries but those would
+need to apply the replicated mechanism to get the same guarantees.)
+The security review has determined that this is the safer deault. When
+certified variables/queries are available (i.e. in place) we might
+flip this default back.
+
+All retrievals feature access control, that is only specific
+principals are permitted to perform the retrieval, and the canister
+traps when this is not the case.
+
+### Getting the signers
+
+The list of current signers can be retrieved by the current signers
+only. This is a somewhat strict specification, as the knowledge of the
+principal doesn't imply knowlwdge of the owning individual, and thus
+doesn't open the door for social engineering attacks (any more than
+guessing the person). So this authorisation requirement might be
+removed in the future.
+
+### Getting the proposals
+
+There are two ways of retrieving proposals
+- singular `get_proposal(id)`, and
+- plural `get_proposal(?range)`.
+
+The former, singular form is authorised based on the signers list _at
+the creation time of the proposal_, thus allowing access even when a
+principal has been removed fro the actual list.
+
+The latter (plural) form is authorised based on the current signers
+list and thus opens up retrieval of _all_ proposals for these principals.
+A range of proposals can be selected by supplying a `start` ID
+(pinning the most recent proposal in the returned set) and a `count`,
+specifying the maximal number of proposals to be retrieved. (If a count
+is not supplied, the current default is 10 proposals, but see issue #10.)
 
 -------------
 
