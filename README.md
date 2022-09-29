@@ -29,7 +29,7 @@ dfx deploy threshold --argument='(vec {principal "'$(dfx identity get-principal)
 
 _Note_: above the first principal is the `dfx` identity, so that one can vote from the command line. The second identity is the Candid GUI's, so that it can also be used.
 
-After the installation changes to the signers list must be done by proposals.
+After the installation, changes to the signers list must be done by proposals.
 
 _CAVEAT_: if the (initial) signers list doesn't contain `threshold`'s
 principal (`dfx canister id threshold`), certain self-updates will be
