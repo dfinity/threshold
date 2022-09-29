@@ -122,7 +122,7 @@ There are two ways of retrieving proposals
 
 The former, singular form is authorised based on the signers list _at
 the creation time of the proposal_, thus allowing access even when a
-principal has been removed fro the actual list.
+principal has been removed from the actual list.
 
 The latter (plural) form is authorised based on the current signers
 list and thus opens up retrieval of _all_ proposals for these principals.
