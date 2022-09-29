@@ -129,7 +129,8 @@ list and thus opens up retrieval of _all_ proposals for these principals.
 A range of proposals can be selected by supplying a `start` ID
 (pinning the most recent proposal in the returned set) and a `count`,
 specifying the maximal number of proposals to be retrieved. (If a count
-is not supplied, the current default is 10 proposals, but see issue #10.)
+is not supplied, the current default is 10 proposals, but see issue 
+https://github.com/dfinity/threshold/issues/10.)
 
 -------------
 
