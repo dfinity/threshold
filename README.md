@@ -133,6 +133,14 @@ specifying the maximal number of proposals to be retrieved. (If a count
 is not supplied, the current default is 10 proposals, but see issue 
 https://github.com/dfinity/threshold/issues/10.)
 
+## The mutual controller scheme for upgrades
+
+If the self-upgrade facility is not desired, the user is advised to
+set up `threshold` twice and configuring those such that they are
+mutually the controllers of each other. This will enable each to
+upgrade the other, with fall-back (or restore) abilities preserved in
+cases of botched upgrades.
+
 -------------
 
 Welcome to your new threshold project and to the internet computer development community. By default, creating a new project adds this README and some template files to your project directory. You can edit these template files to customize your project and to include your own code to speed up the development cycle.
