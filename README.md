@@ -112,7 +112,7 @@ only. This is a somewhat strict specification, as the knowledge of the
 principal doesn't imply knowlwdge of the owning individual, and thus
 doesn't open the door for social engineering attacks (any more than
 guessing the person). So this authorisation requirement might be
-removed in the future.
+removed in the future (https://github.com/dfinity/threshold/issues/12).
 
 ### Getting the proposals
 
