@@ -12,17 +12,17 @@ actor class(signers : [Principal]) = threshold {
     func sanitiseSigners(signers : [Principal]) : [Principal] {
         assert signers.size() > 1;
         // no duplicates allowed
-        let good = Array_init<?Principal>(signers.size(), null);
-        var occup = 0;
-        for (s0 in signers.vals()) {
-            let s = ?s0;
-            var j = 0;
-            while (j < occup) {
-                assert s != good[j];
-                j += 1
+        let sanitised = Array_init<?Principal>(signers.size(), null);
+        var curr = 0;
+        for (s in signers.vals()) {
+            let signer = ?s;
+            var prev = 0;
+            while (prev < curr) {
+                assert signer != sanitised[prev];
+                prev += 1
             };
-            good[occup] := s;
-            occup += 1
+            sanitised[prev] := signer;
+            curr += 1
         };
         signers
     };
@@ -42,15 +42,15 @@ actor class(signers : [Principal]) = threshold {
 
     public shared ({caller}) func accept(id : Id) : async () {
         for (prop in proposals.vals()) {
-            let { id = i; payload; signers } = prop;
-            if (id == i) {
+            let { id = current_id; payload; signers } = prop;
+            if (id == current_id) {
                 authoriseAccording(caller, signers);
                 let { active; yes; votes } = prop.state;
                 switch (active, vote(caller, votes)) {
                     case (true, ?votes) {
                         prop.state := { prop.state with yes = yes + 1; votes };
-                        func passing( { yes } : State) : Bool = 2 * yes > signers.size();
-                        if (passing(prop.state)) {
+                        // voting threshold reached
+                        if (2 * prop.state.yes > signers.size()) {
                             // retire the proposal
                             prop.state := { prop.state with active = false };
                             // execute payload and keep result in the state
@@ -66,15 +66,15 @@ actor class(signers : [Principal]) = threshold {
 
     public shared ({caller}) func reject(id : Id) : async () {
         for (prop in proposals.vals()) {
-            let { id = i; signers } = prop;
-            if (id == i) {
+            let { id = current_id; signers } = prop;
+            if (id == current_id) {
                 authoriseAccording(caller, signers);
                 let { active; no; votes } = prop.state;
                 switch (active, vote(caller, votes)) {
                     case (true, ?votes) {
                         let state = { prop.state with no = no + 1; votes };
-                        func hopeless({ no } : State) : Bool = 2 * no >= signers.size();
-                        prop.state := { state with active = not hopeless state };
+                        let rejected = 2 * state.no >= signers.size();
+                        prop.state := { state with active = not rejected };
                         return
                     };
                     case _ ()
@@ -117,32 +117,32 @@ actor class(signers : [Principal]) = threshold {
     };
 
     public shared ({caller}) func get_proposal(id : Id) : async ?Proposal {
-        for (p in proposals.vals()) {
-            if (p.id == id) {
-                authoriseAccording(caller, p.signers);
-                return ?{ p with state = p.state }
+        for (prop in proposals.vals()) {
+            if (prop.id == id) {
+                authoriseAccording(caller, prop.signers);
+                return ?{ prop with state = prop.state }
             }
         };
         null
     };
 
     // traps when p is not in the given principals list
-    func authoriseAccording(p : Principal, according : [Principal]) {
+    func authoriseAccording(principal : Principal, according : [Principal]) {
         for (a in according.vals()) {
-            if (p == a) return
+            if (principal == a) return
         };
         debug {
-            debugPrint(debug_show ("cannot authorise", p))
+            debugPrint(debug_show("cannot authorise", principal))
         };
         assert false;
     };
 
     // traps when p is not in the `authorised` list
-    func authorise(p : Principal) = authoriseAccording(p, authorised);
+    func authorise(principal : Principal) = authoriseAccording(principal, authorised);
 
     // traps when p is not this actor
-    func self(p : Principal) {
-        assert p == principalOfActor threshold
+    func self(principal : Principal) {
+        assert principal == principalOfActor threshold
     };
 
     // internal helper
@@ -163,16 +163,16 @@ actor class(signers : [Principal]) = threshold {
     };
 
     // utilities
-    func prepend<A>(a : A, as : [A]) : [A] =
-        Array_tabulate<A>(as.size() + 1, func i = if (i == 0) a else as[i - 1]);
+    func prepend<A>(element : A, elements : [A]) : [A] =
+        Array_tabulate<A>(elements.size() + 1, func i = if (i == 0) element else elements[i - 1]);
 
-    func filter<A>(p : A -> Bool, as : [A]) : [A] {
-        var hits = 0;
-        let good = Array_init<?A>(as.size(), null);
-        for (a in as.vals()) {
-            if (p(a)) { good[hits] := ?a; hits += 1 };
+    func filter<A>(predicate : A -> Bool, elements : [A]) : [A] {
+        var numHits = 0;
+        let filtered = Array_init<?A>(elements.size(), null);
+        for (element in elements.vals()) {
+            if (predicate element) { filtered[numHits] := ?element; numHits += 1 };
         };
-        Array_tabulate<A>(hits, func(i) : A { let ?h = good[i]; h });
+        Array_tabulate<A>(numHits, func i { let ?unpacked = filtered[i]; unpacked });
     };
 
     // helpers
@@ -196,8 +196,8 @@ actor class(signers : [Principal]) = threshold {
     func now() : Timestamp = nat64ToNat(nanos1970()) / 1_000_000_000; // seconds since 1970-01-01
 
     func vote(signer : Principal, votes : [Vote]) : ?[Vote] {
-        for ((_, p) in votes.vals()) {
-            if (p == signer) return null;
+        for ((_, principal) in votes.vals()) {
+            if (principal == signer) return null;
         };
         ?prepend((now(), signer), votes);
     }
