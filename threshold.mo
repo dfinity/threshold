@@ -102,18 +102,13 @@ actor class(signers : [Principal]) = threshold {
     // authorised principals can retrieve proposals (in reverse creation order)
     // `start` (when given) specifies the newest proposal the caller is interested in
     // `count` (when given) specifies the number of proposals returned (defaults to 10)
-    public shared ({caller}) func get_proposals({ start : ?Id; count : ?Nat }) : async [Proposal] {
+    public shared ({caller}) func get_proposals({ startOpt : ?Id; countOpt : ?Nat }) : async [Proposal] {
         let defaultCount = 10;
         authorise caller;
-        let all = Array_tabulate<Proposal>(proposals.size(), func n = { proposals[n] with state = proposals[n].state });
-        var toGo : Int = switch count { case null defaultCount; case (?c) c };
-        func onPage(p : Proposal) : Bool {
-            let include = toGo > 0;
-            let checked = switch start { case (?s) { include and p.id <= s }; case _ include };
-            if checked { toGo -= 1 };
-            checked
-        };
-        filter(onPage, all)
+        let allProposals = Array_tabulate<Proposal>(proposals.size(), func i = { proposals[i] with state = proposals[i].state });
+        let start = switch startOpt { case (?start) start; case null 0};
+        let end = start + (switch countOpt { case (?count) count; case null defaultCount });
+        filter<Proposal>(func prop = prop.id >= start and prop.id < end, allProposals)
     };
 
     public shared ({caller}) func get_proposal(id : Id) : async ?Proposal {
