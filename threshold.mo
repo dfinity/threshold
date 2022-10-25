@@ -1,13 +1,33 @@
-import {Array_tabulate; Array_init; call_raw; debugPrint; principalOfActor; nat64ToNat; time = nanos1970} = "mo:⛔";
+import {
+  Array_tabulate;
+  Array_init;
+  call_raw;
+  debugPrint;
+  principalOfActor;
+  nat64ToNat;
+  time = nanos1970;
+} = "mo:⛔";
 
-actor class(signers : [Principal]) = threshold {
+actor class (signers : [Principal]) = threshold {
   type Id = Nat;
   type Timestamp = Nat;
   type Payload = (Principal, Text, Blob);
   type Vote = (Timestamp, Principal);
-  type State = { active : Bool; yes : Nat; no : Nat; votes : [Vote]; result : ?Blob };
-  type Prop = { id : Id; memo : Text; signers : [Principal]; var state : State; payload : Payload };
-  
+  type State = {
+    active : Bool;
+    yes : Nat;
+    no : Nat;
+    votes : [Vote];
+    result : ?Blob;
+  };
+  type Prop = {
+    id : Id;
+    memo : Text;
+    signers : [Principal];
+    var state : State;
+    payload : Payload;
+  };
+
   // criterion for valid signers
   func sanitiseSigners(signers : [Principal]) : [Principal] {
     assert signers.size() > 1;
@@ -19,28 +39,28 @@ actor class(signers : [Principal]) = threshold {
       var prev = 0;
       while (prev < curr) {
         assert signer != sanitised[prev];
-        prev += 1
+        prev += 1;
       };
       sanitised[prev] := signer;
-      curr += 1
+      curr += 1;
     };
-    signers
+    signers;
   };
 
   stable var serial = 0;
   stable var authorised : [Principal] = sanitiseSigners signers;
   stable var proposals : [Prop] = [];
-  
-  public shared ({caller}) func submit(memo : Text, payload : Payload) : async Nat {
+
+  public shared ({ caller }) func submit(memo : Text, payload : Payload) : async Nat {
     authorise caller;
     serial += 1;
     let ?votes = vote(caller, []);
     let state = { active = true; yes = 1; no = 0; votes; result = null };
     proposals := prepend<Prop>({ id = serial; memo; signers = authorised; var state; payload }, proposals);
-    serial
+    serial;
   };
 
-  public shared ({caller}) func accept(id : Id) : async () {
+  public shared ({ caller }) func accept(id : Id) : async () {
     for (prop in proposals.vals()) {
       let { id = current_id; payload; signers } = prop;
       if (id == current_id) {
@@ -54,17 +74,17 @@ actor class(signers : [Principal]) = threshold {
               // retire the proposal
               prop.state := { prop.state with active = false };
               // execute payload and keep result in the state
-              await execute(prop, payload)
+              await execute(prop, payload);
             };
-            return
+            return;
           };
-          case _ ()
-        }
-      }
-    }
+          case _ ();
+        };
+      };
+    };
   };
 
-  public shared ({caller}) func reject(id : Id) : async () {
+  public shared ({ caller }) func reject(id : Id) : async () {
     for (prop in proposals.vals()) {
       let { id = current_id; signers } = prop;
       if (id == current_id) {
@@ -75,59 +95,62 @@ actor class(signers : [Principal]) = threshold {
             let state = { prop.state with no = no + 1; votes };
             let rejected = 2 * state.no >= signers.size();
             prop.state := { state with active = not rejected };
-            return
+            return;
           };
-          case _ ()
-        }
-      }
-    }
+          case _ ();
+        };
+      };
+    };
   };
 
-  public shared ({caller}) func prune() : async () {
+  public shared ({ caller }) func prune() : async () {
     self caller;
-    proposals := filter(func (p : Prop) : Bool = p.state.active, proposals)
+    proposals := filter(func(p : Prop) : Bool = p.state.active, proposals);
   };
 
-  public shared ({caller}) func set_signers(authlist : [Principal]) : async () {
+  public shared ({ caller }) func set_signers(authlist : [Principal]) : async () {
     self caller;
-    authorised := sanitiseSigners authlist
+    authorised := sanitiseSigners authlist;
   };
 
-  public shared ({caller}) func get_signers() : async [Principal] {
+  public shared ({ caller }) func get_signers() : async [Principal] {
     authorise caller;
-    authorised
+    authorised;
   };
 
   type Proposal = { id : Id; memo : Text; state : State; payload : Payload };
   // authorised principals can retrieve proposals (in reverse creation order)
   // `start` (when given) specifies the newest proposal the caller is interested in
   // `count` (when given) specifies the number of proposals returned (defaults to 10)
-  public shared ({caller}) func get_proposals({ startOpt : ?Id; countOpt : ?Nat }) : async [Proposal] {
+  public shared ({ caller }) func get_proposals({
+    startOpt : ?Id;
+    countOpt : ?Nat;
+  }) : async [Proposal] {
     let defaultCount = 10;
     authorise caller;
     let allProposals = Array_tabulate<Proposal>(proposals.size(), func i = { proposals[i] with state = proposals[i].state });
-    let start = switch startOpt { case (?start) start; case null 0};
+    let start = switch startOpt { case (?start) start; case null 0 };
     let end = start + (switch countOpt { case (?count) count; case null defaultCount });
-    filter<Proposal>(func prop = prop.id >= start and prop.id < end, allProposals)
+    filter<Proposal>(func prop = prop.id >= start and prop.id < end, allProposals);
   };
 
-  public shared ({caller}) func get_proposal(id : Id) : async ?Proposal {
+  public shared ({ caller }) func get_proposal(id : Id) : async ?Proposal {
     for (prop in proposals.vals()) {
       if (prop.id == id) {
         authoriseAccording(caller, prop.signers);
-        return ?{ prop with state = prop.state }
-      }
+        return ?{ prop with state = prop.state };
+      };
     };
-    null
+    null;
   };
 
   // traps when p is not in the given principals list
   func authoriseAccording(principal : Principal, according : [Principal]) {
     for (a in according.vals()) {
-      if (principal == a) return
+      if (principal == a) return;
     };
     debug {
-      debugPrint(debug_show("cannot authorise", principal))
+      debugPrint(debug_show ("cannot authorise", principal));
     };
     assert false;
   };
@@ -137,7 +160,7 @@ actor class(signers : [Principal]) = threshold {
 
   // traps when p is not this actor
   func self(principal : Principal) {
-    assert principal == principalOfActor threshold
+    assert principal == principalOfActor threshold;
   };
 
   // internal helper
@@ -146,19 +169,20 @@ actor class(signers : [Principal]) = threshold {
     switch (is_selfupgrade(principal, method, blob)) {
       case (?params) {
         debug debugPrint(debug_show ("it's a selfupgrade", params));
-        let ic00 = actor "aaaaa-aa" : actor { install_code : InstallParams -> () };
-        ic00.install_code params
+        let ic00 = actor "aaaaa-aa" : actor {
+          install_code : InstallParams -> ();
+        };
+        ic00.install_code params;
       };
       case _ {
         let res = await call_raw(principal, method, blob);
         prop.state := { prop.state with result = ?res };
-      }
-    }
+      };
+    };
   };
 
   // utilities
-  func prepend<A>(element : A, elements : [A]) : [A] =
-    Array_tabulate<A>(elements.size() + 1, func i = if (i == 0) element else elements[i - 1]);
+  func prepend<A>(element : A, elements : [A]) : [A] = Array_tabulate<A>(elements.size() + 1, func i = if (i == 0) element else elements[i - 1]);
 
   func filter<A>(predicate : A -> Bool, elements : [A]) : [A] {
     var numHits = 0;
@@ -177,18 +201,16 @@ actor class(signers : [Principal]) = threshold {
     arg : Blob;
   };
   func is_selfupgrade((addressee, method, args) : Payload) : ?InstallParams {
-    if (addressee == principalOfActor (actor "aaaaa-aa") and method == "install_code") {
+    if (addressee == principalOfActor(actor "aaaaa-aa") and method == "install_code") {
       do ? {
-        let params : InstallParams = (from_candid(args) : ?InstallParams)!;
-        if (params.canister_id == principalOfActor threshold)
-          params
-        else {
-          null!
-        }
-      }
+        let params : InstallParams = (from_candid (args) : ?InstallParams)!;
+        if (params.canister_id == principalOfActor threshold) params else {
+          null!;
+        };
+      };
     } else {
-      null
-    }
+      null;
+    };
   };
 
   func now() : Timestamp = nat64ToNat(nanos1970()) / 1_000_000_000; // seconds since 1970-01-01
@@ -198,5 +220,5 @@ actor class(signers : [Principal]) = threshold {
       if (principal == signer) return null;
     };
     ?prepend((now(), signer), votes);
-  }
-}
+  };
+};
