@@ -62,8 +62,8 @@ actor class (signers : [Principal]) = threshold {
 
   public shared ({ caller }) func accept(id : Id) : async () {
     for (prop in proposals.vals()) {
-      let { id = current_id; payload; signers } = prop;
-      if (id == current_id) {
+      let { id = currentId; payload; signers } = prop;
+      if (id == currentId) {
         authoriseAccording(caller, signers);
         let { active; yes; votes } = prop.state;
         switch (active, vote(caller, votes)) {
@@ -86,8 +86,8 @@ actor class (signers : [Principal]) = threshold {
 
   public shared ({ caller }) func reject(id : Id) : async () {
     for (prop in proposals.vals()) {
-      let { id = current_id; signers } = prop;
-      if (id == current_id) {
+      let { id = currentId; signers } = prop;
+      if (id == currentId) {
         authoriseAccording(caller, signers);
         let { active; no; votes } = prop.state;
         switch (active, vote(caller, votes)) {
@@ -108,12 +108,12 @@ actor class (signers : [Principal]) = threshold {
     proposals := filter(func(p : Prop) : Bool = p.state.active, proposals);
   };
 
-  public shared ({ caller }) func set_signers(authlist : [Principal]) : async () {
+  public shared ({ caller }) func setSigners(authlist : [Principal]) : async () {
     self caller;
     authorised := sanitiseSigners authlist;
   };
 
-  public shared ({ caller }) func get_signers() : async [Principal] {
+  public shared ({ caller }) func getSigners() : async [Principal] {
     authorise caller;
     authorised;
   };
@@ -122,7 +122,7 @@ actor class (signers : [Principal]) = threshold {
   // authorised principals can retrieve proposals (in reverse creation order)
   // `start` (when given) specifies the newest proposal the caller is interested in
   // `count` (when given) specifies the number of proposals returned (defaults to 10)
-  public shared ({ caller }) func get_proposals({
+  public shared ({ caller }) func getProposals({
     startOpt : ?Id;
     countOpt : ?Nat;
   }) : async [Proposal] {
@@ -134,7 +134,7 @@ actor class (signers : [Principal]) = threshold {
     filter<Proposal>(func prop = prop.id >= start and prop.id < end, allProposals);
   };
 
-  public shared ({ caller }) func get_proposal(id : Id) : async ?Proposal {
+  public shared ({ caller }) func getProposal(id : Id) : async ?Proposal {
     for (prop in proposals.vals()) {
       if (prop.id == id) {
         authoriseAccording(caller, prop.signers);
@@ -166,7 +166,7 @@ actor class (signers : [Principal]) = threshold {
   // internal helper
   private func execute(prop : Prop, (principal, method, blob) : Payload) : async () {
     // send the payload
-    switch (is_selfupgrade(principal, method, blob)) {
+    switch (isSelfUpgrade(principal, method, blob)) {
       case (?params) {
         debug debugPrint(debug_show ("it's a selfupgrade", params));
         let ic00 = actor "aaaaa-aa" : actor {
@@ -200,7 +200,8 @@ actor class (signers : [Principal]) = threshold {
     wasm_module : Blob;
     arg : Blob;
   };
-  func is_selfupgrade((addressee, method, args) : Payload) : ?InstallParams {
+
+  func isSelfUpgrade((addressee, method, args) : Payload) : ?InstallParams {
     if (addressee == principalOfActor(actor "aaaaa-aa") and method == "install_code") {
       do ? {
         let params : InstallParams = (from_candid (args) : ?InstallParams)!;
