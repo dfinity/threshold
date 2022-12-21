@@ -16,7 +16,6 @@ concurrency:
 jobs:
   threshold-darwin:
     runs-on: macos-12
-    enable: false
     steps:
       - uses: actions/checkout@v3
       - name: Provision Darwin
@@ -24,9 +23,7 @@ jobs:
       - name: Motoko Threshold Darwin
         run: |
           dfx start --background
-          pushd motoko/actor_reference
           make test
-          popd
   threshold-linux:
     runs-on: ubuntu-22.04
     steps:
