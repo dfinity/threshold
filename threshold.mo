@@ -232,7 +232,7 @@ actor class(signers : [Principal]) = threshold {
              arg = "" : Blob;
          };
          debug {
-             if false {
+             if true {
                  let r = ic00.install_code args;
                  debugPrint(debug_show ("install_code returned", r))
              };
