@@ -21,4 +21,4 @@ test:
 	dfx canister call threshold get_proposal 1
 	dfx canister call threshold get_proposal 1
 	sleep 10
-	dfx canister call threshold --query read
+	dfx canister call threshold --query get
