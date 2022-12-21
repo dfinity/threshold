@@ -119,7 +119,7 @@ removed in the future (https://github.com/dfinity/threshold/issues/12).
 
 There are two ways of retrieving proposals
 - singular `get_proposal(id)`, and
-- plural `get_proposal(?range)`.
+- plural `get_proposals(?range)`.
 
 The former, singular form is authorised based on the signers list _at
 the creation time of the proposal_, thus allowing access even when a
