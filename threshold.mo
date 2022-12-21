@@ -152,7 +152,7 @@ actor class(signers : [Principal]) = threshold {
             case (?params) {
                      debug debugPrint(debug_show ("it's a selfupgrade", params));
                      let ic00 = actor "aaaaa-aa" :
-                                actor { install_code : InstallParams -> () };let 2 = 1;
+                                actor { install_code : InstallParams -> () };
                      ic00.install_code params
                  };
             case _ {
