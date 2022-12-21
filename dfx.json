@@ -2,8 +2,7 @@
   "canisters": {
     "threshold": {
       "main": "threshold.mo",
-      "type": "motoko",
-      "args" : "--release"
+      "type": "motoko"
     }
   },
   "defaults": {
