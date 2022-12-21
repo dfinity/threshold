@@ -2,7 +2,6 @@
 
 test:
 	dfx --version
-	yes passphrase | dfx identity new test
 	dfx identity list
 	dfx identity get-principal
 	dfx deploy threshold \
