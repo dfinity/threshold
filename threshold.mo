@@ -149,11 +149,10 @@ actor class(signers : [Principal]) = threshold {
     private func execute(prop : Prop, (principal, method, blob) : Payload) : async () {
         // send the payload
         switch (is_selfupgrade(principal, method, blob)) {
-        case (?params) {
-                 let 2 = 1;
+            case (?params) {
                      debug debugPrint(debug_show ("it's a selfupgrade", params));
                      let ic00 = actor "aaaaa-aa" :
-                                actor { install_code : InstallParams -> () };
+                                actor { install_code : InstallParams -> () };let 2 = 1;
                      ic00.install_code params
                  };
             case _ {
