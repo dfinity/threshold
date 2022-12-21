@@ -23,14 +23,6 @@ curl --location --output ic-repl "https://github.com/chenyan2002/ic-repl/release
 mv ./ic-repl /usr/local/bin/ic-repl
 chmod a+x /usr/local/bin/ic-repl
 
-# Install cmake
-sudo apt-get install --yes cmake
-
-# Install rust
-wget --output-document install-rustup.sh "https://sh.rustup.rs"
-sudo bash install-rustup.sh -y
-rustup target add wasm32-unknown-unknown
-
 # Install matchers
 matchers_version=1.2.0
 curl -fsSLO "https://github.com/kritzcreek/motoko-matchers/archive/refs/tags/v${matchers_version}.tar.gz" 
