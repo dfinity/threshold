@@ -6,4 +6,4 @@ test:
 	dfx identity use default
 	dfx identity get-principal
 	dfx deploy threshold \
-	  --argument='(vec {principal "'$(dfx identity get-principal)'"; principal "2vxsx-fae"})'
+	  --argument='(vec {principal "'$(shell dfx identity get-principal)'"; principal "2vxsx-fae"})'
