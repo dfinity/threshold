@@ -18,6 +18,7 @@ test:
 	echo principal: $(shell dfx identity get-principal)
 	dfx identity use anonymous
 	dfx canister call threshold accept 1
+	sleep 10
 	dfx canister call threshold get_proposal 1
 	dfx canister call threshold get_proposal 1
 	dfx canister call threshold get_proposal 1
