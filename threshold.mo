@@ -120,18 +120,27 @@ actor class (signers : [Principal]) = threshold {
 
   type Proposal = { id : Id; memo : Text; state : State; payload : Payload };
   // authorised principals can retrieve proposals (in reverse creation order)
-  // `start` (when given) specifies the newest proposal the caller is interested in
-  // `count` (when given) specifies the number of proposals returned (defaults to 10)
+  // `newestOpt` (when given) specifies the newest proposal the caller is interested in
+  // `countOpt` (when given) specifies the number of proposals returned (defaults to 10)
   public shared ({ caller }) func getProposals({
-    startOpt : ?Id;
+    newestOpt : ?Id;
     countOpt : ?Nat;
   }) : async [Proposal] {
     let defaultCount = 10;
     authorise caller;
     let allProposals = Array_tabulate<Proposal>(proposals.size(), func i = { proposals[i] with state = proposals[i].state });
-    let start = switch startOpt { case (?start) start; case null 0 };
-    let end = start + (switch countOpt { case (?count) count; case null defaultCount });
-    filter<Proposal>(func prop = prop.id >= start and prop.id < end, allProposals);
+    var count = switch countOpt { case (?count) count; case null defaultCount };
+    filter<Proposal>(
+      func proposal {
+        count -= 1;
+        switch newestOpt {
+          // keep `count` many IDs older or equal to `newest`
+          case (?newest) proposal.id <= newest and count >= 0;
+          case null count >= 0;
+        };
+      },
+      allProposals,
+    );
   };
 
   public shared ({ caller }) func getProposal(id : Id) : async ?Proposal {
