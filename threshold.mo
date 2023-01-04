@@ -129,7 +129,10 @@ actor class (signers : [Principal]) = threshold {
     let defaultCount = 10;
     authorise caller;
     let allProposals = Array_tabulate<Proposal>(proposals.size(), func i = { proposals[i] with state = proposals[i].state });
-    var count = switch countOpt { case (?count) count; case null defaultCount };
+    var count : Int = switch countOpt {
+      case (?count) count;
+      case null defaultCount;
+    };
     filter<Proposal>(
       func proposal {
         count -= 1;
