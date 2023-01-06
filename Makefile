@@ -6,6 +6,26 @@ test:
 	dfx identity use default
 	dfx identity list
 	dfx identity get-principal
+	yes yes | dfx deploy threshold --mode reinstall --with-cycles 8000000000000 \
+	  --argument='(vec {principal "'$(shell dfx identity get-principal)'"; principal "2vxsx-fae"})'
+	dfx canister call threshold getSigners
+	dfx canister call threshold submit '("purge", record { principal "rrkah-fqaaa-aaaaa-aaaaq-cai"; "prune"; blob "DIDL\00\00" })'
+	dfx canister call threshold getProposal 1
+	dfx canister call threshold accept 1
+	dfx identity use anonymous
+	dfx canister call threshold accept 1
+	sleep 1
+	dfx canister call threshold getProposal 1 | tee result
+	echo '(null)' | diff - result
+	dfx identity use default
+
+
+self-upgrade:
+	dfx --version
+	dfx identity list
+	dfx identity use default
+	dfx identity list
+	dfx identity get-principal
 	dfx deploy threshold --with-cycles 8000000000000 \
 	  --argument='(vec {principal "'$(shell dfx identity get-principal)'"; principal "2vxsx-fae"})'
 	dfx canister call threshold getSigners
