@@ -242,7 +242,7 @@ actor class (signers : [Principal]) = threshold {
 
 
 
-    ;public func test_reinstall() : async Payload {
+    public func test_reinstall() : async Payload {
          type canister_settings = {
              controllers : ?[Principal];
              compute_allocation: ?Nat;
