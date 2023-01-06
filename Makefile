@@ -20,12 +20,18 @@ test:
 	dfx canister call threshold accept 1
 	sleep 10
 	dfx canister call threshold getProposal 1
-	dfx canister call threshold getProposal 1
-	dfx canister call threshold getProposal 1
+	dfx identity use default
+	dfx canister call threshold submit '("purge", record { principal "rrkah-fqaaa-aaaaa-aaaaq-cai"; "prune"; blob "DIDL\00\00" })'
+	dfx canister call threshold getProposal 2
+	dfx canister call threshold accept 2
+	dfx identity use anonymous
+	dfx canister call threshold accept 2
+	dfx canister call threshold getProposal 2
 	dfx canister call threshold getProposal 1
 	dfx canister call threshold getProposal 1
 	dfx canister call threshold getProposal 1
 	dfx canister call threshold getProposal 1
 	dfx canister call threshold getProposal 1
 	sleep 10
-	dfx canister call threshold --query get
+	- dfx canister call threshold --query get
+	dfx identity use default
