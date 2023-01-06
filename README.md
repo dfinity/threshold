@@ -119,7 +119,7 @@ removed in the future (https://github.com/dfinity/threshold/issues/12).
 
 There are two ways of retrieving proposals
 - singular `getProposal(id)`, and
-- plural `getProposals({ newestOpt : ?Id; countOpt : ?Nat })`.
+- plural `getProposals({ newest : ?Id; count : ?Nat })`.
 
 The former, singular form is authorised based on the signers list _at
 the creation time of the proposal_, thus allowing access even when a
@@ -127,8 +127,8 @@ principal has been removed from the current list.
 
 The latter (plural) form is authorised based on the current signers
 list and thus opens up retrieval of _all_ proposals for these principals.
-A range of proposals can be selected by supplying a `newestOpt` ID
-(pinning the most recent proposal in the returned set) and a `countOpt`,
+A range of proposals can be selected by supplying a `newest` ID
+(pinning the most recent proposal in the returned set) and a `count`,
 specifying the maximal number of proposals to be retrieved. (If a count
 is not supplied, the current default is 10 proposals, but see issue
 https://github.com/dfinity/threshold/issues/10.)
