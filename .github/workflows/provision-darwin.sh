@@ -23,18 +23,10 @@ rm install-dfx.sh
 dfx cache install
 
 # Install ic-repl
-version=0.1.2
+version=0.3.10
 curl --location --output ic-repl "https://github.com/chenyan2002/ic-repl/releases/download/$version/ic-repl-macos"
 mv ./ic-repl /usr/local/bin/ic-repl
 chmod a+x /usr/local/bin/ic-repl
-
-# Install cmake
-brew install cmake
-
-# Install rust
-curl --location --output install-rustup.sh "https://sh.rustup.rs"
-bash install-rustup.sh -y
-rustup target add wasm32-unknown-unknown
 
 # Install matchers
 matchers_version=1.2.0
@@ -44,7 +36,7 @@ rm "v${matchers_version}.tar.gz"
 mv "$(dfx cache show)/motoko-matchers-${matchers_version}" "$(dfx cache show)/motoko-matchers"
 
 # Install wasmtime
-wasmtime_version=0.33.1
+wasmtime_version=3.0.1
 curl -fsSLO "https://github.com/bytecodealliance/wasmtime/releases/download/v${wasmtime_version}/wasmtime-v${wasmtime_version}-x86_64-macos.tar.xz" 
 mkdir -p "${HOME}/bin"
 tar -xf "wasmtime-v${wasmtime_version}-x86_64-macos.tar.xz" --directory "${HOME}/bin/"
