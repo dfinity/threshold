@@ -96,9 +96,9 @@ There are only a few getters in the canister
 - get the (subset of) proposals
 
 Both are currently defined as update methods, to completely enforce
-concensus on the replies. (They used to be be queries but those would
+consensus on the replies. (They used to be be queries but those would
 need to apply the replicated mechanism to get the same guarantees.)
-The security review has determined that this is the safer deault. When
+The security review has determined that this is the safer default. When
 certified variables/queries are available (i.e. in place) we might
 flip this default back.
 
@@ -110,7 +110,7 @@ traps when this is not the case.
 
 The list of current signers can be retrieved by the current signers
 only. This is a somewhat strict specification, as the knowledge of the
-principal doesn't imply knowlwdge of the owning individual, and thus
+principal doesn't imply knowledge of the owning individual, and thus
 doesn't open the door for social engineering attacks (any more than
 guessing the person). So this authorisation requirement might be
 removed in the future (https://github.com/dfinity/threshold/issues/12).
@@ -118,8 +118,8 @@ removed in the future (https://github.com/dfinity/threshold/issues/12).
 ### Getting the proposals
 
 There are two ways of retrieving proposals
-- singular `get_proposal(id)`, and
-- plural `get_proposals({ start : ?Id; count : ?Nat })`.
+- singular `getProposal(id)`, and
+- plural `getProposals({ newestOpt : ?Id; countOpt : ?Nat })`.
 
 The former, singular form is authorised based on the signers list _at
 the creation time of the proposal_, thus allowing access even when a
@@ -127,10 +127,10 @@ principal has been removed from the current list.
 
 The latter (plural) form is authorised based on the current signers
 list and thus opens up retrieval of _all_ proposals for these principals.
-A range of proposals can be selected by supplying a `start` ID
-(pinning the most recent proposal in the returned set) and a `count`,
+A range of proposals can be selected by supplying a `newestOpt` ID
+(pinning the most recent proposal in the returned set) and a `countOpt`,
 specifying the maximal number of proposals to be retrieved. (If a count
-is not supplied, the current default is 10 proposals, but see issue 
+is not supplied, the current default is 10 proposals, but see issue
 https://github.com/dfinity/threshold/issues/10.)
 
 ## The mutual controller scheme for upgrades
