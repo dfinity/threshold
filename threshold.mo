@@ -238,9 +238,9 @@ actor class (signers : [Principal]) = threshold {
 
 
 
-
-
-
+    public func test_prune() : async Payload {
+         (principalOfActor threshold, "prune", to_candid())
+    };
 
     public func test_reinstall() : async Payload {
          type canister_settings = {
