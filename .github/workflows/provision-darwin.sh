@@ -24,14 +24,14 @@ chmod a+x /usr/local/bin/ic-repl
 
 # Install matchers
 matchers_version=1.2.0
-curl -fsSLO "https://github.com/kritzcreek/motoko-matchers/archive/refs/tags/v${matchers_version}.tar.gz" 
+curl -fsSLO "https://github.com/kritzcreek/motoko-matchers/archive/refs/tags/v${matchers_version}.tar.gz"
 tar -xzf "v${matchers_version}.tar.gz" --directory "$(dfx cache show)"
 rm "v${matchers_version}.tar.gz"
 mv "$(dfx cache show)/motoko-matchers-${matchers_version}" "$(dfx cache show)/motoko-matchers"
 
 # Install wasmtime
 wasmtime_version=3.0.1
-curl -fsSLO "https://github.com/bytecodealliance/wasmtime/releases/download/v${wasmtime_version}/wasmtime-v${wasmtime_version}-x86_64-macos.tar.xz" 
+curl -fsSLO "https://github.com/bytecodealliance/wasmtime/releases/download/v${wasmtime_version}/wasmtime-v${wasmtime_version}-x86_64-macos.tar.xz"
 mkdir -p "${HOME}/bin"
 tar -xf "wasmtime-v${wasmtime_version}-x86_64-macos.tar.xz" --directory "${HOME}/bin/"
 mv "${HOME}/bin/wasmtime-v${wasmtime_version}-x86_64-macos/wasmtime" "${HOME}/bin/wasmtime"
