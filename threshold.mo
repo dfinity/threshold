@@ -129,17 +129,17 @@ actor class (signers : [Principal]) = threshold {
     let defaultCount = 10;
     authorise caller;
     let allProposals = Array_tabulate<Proposal>(proposals.size(), func i = { proposals[i] with state = proposals[i].state });
-    var count : Int = switch count {
+    var go : Int = switch count {
       case (?count) count;
       case null defaultCount;
     };
     filter<Proposal>(
       func proposal {
-        count -= 1;
+        go -= 1;
         switch newest {
-          // keep `count` many IDs older or equal to `newest`
-          case (?newest) proposal.id <= newest and count >= 0;
-          case null count >= 0;
+          // keep `go` many IDs older or equal to `newest`
+          case (?newest) proposal.id <= newest and go >= 0;
+          case null go >= 0;
         };
       },
       allProposals,
