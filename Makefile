@@ -1,4 +1,4 @@
-.PHONY: test
+.PHONY: test self-upgrade
 
 test:
 	dfx --version
@@ -18,7 +18,6 @@ test:
 	dfx canister call threshold getProposal 1 | tee result
 	echo '(null)' | diff - result
 	dfx identity use default
-
 
 self-upgrade:
 	dfx --version
