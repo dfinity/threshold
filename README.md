@@ -57,6 +57,8 @@ dfx canister call threshold accept 1
 
 ## Self-upgrade proposal
 
+_Note_: this feature doesn't work currently and I don't know how to salvage it.
+
 As a proof-of-concept I included a self-upgrade code path. Before execution of a
 proposal the addressee principal and the method name are compared to the management
 canister's `install_code` method. If both facts match, the payload is decoded as
