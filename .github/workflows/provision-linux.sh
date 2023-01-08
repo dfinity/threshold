@@ -5,12 +5,6 @@ set -ex
 # Enter temporary directory.
 pushd /tmp
 
-# Install Node.
-wget --output-document install-node.sh "https://deb.nodesource.com/setup_14.x"
-sudo bash install-node.sh
-sudo apt-get install --yes nodejs
-rm install-node.sh
-
 # Install DFINITY SDK.
 wget --output-document install-dfx.sh "https://internetcomputer.org/install.sh"
 DFX_VERSION=${DFX_VERSION:=0.12.1} bash install-dfx.sh < <(yes Y)
