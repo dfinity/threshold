@@ -23,7 +23,7 @@ jobs:
       - name: Motoko Threshold Darwin
         run: |
           dfx start --background
-          make test
+          make test self-upgrade
   threshold-linux:
     runs-on: ubuntu-22.04
     steps:
@@ -33,4 +33,4 @@ jobs:
       - name: Motoko Threshold Linux
         run: |
           dfx start --background
-          make test
+          make test self-upgrade
