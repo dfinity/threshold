@@ -63,7 +63,7 @@ canister's `install_code` method. If both facts match, the payload is decoded as
 the official install parameters, and in case of success, the canister to be upgraded
 is extracted and compared against `threshold`. If they are equal the install parameters
 are used as arguments to the one-way invocation of the management canister's `install_code`
-method. Since such and invocation doesn't leave a continuation context, the canister's
+method. Since such an invocation doesn't leave a continuation context, the canister's
 state machine can cleanly wind down and the upgrade succeeds.
 
 ### The concrete command
