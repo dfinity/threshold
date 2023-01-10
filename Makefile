@@ -6,7 +6,7 @@ test:
 	dfx identity use default
 	dfx identity list
 	dfx identity get-principal
-	yes yes | dfx deploy threshold --mode reinstall --with-cycles 8000000000000 \
+	dfx deploy threshold --mode reinstall --yes --with-cycles 8000000000000 \
 	  --argument='(vec {principal "'$(shell dfx identity get-principal)'"; principal "2vxsx-fae"})'
 	dfx canister call threshold getSigners
 	dfx canister call threshold submit '("purge", record { principal "rrkah-fqaaa-aaaaa-aaaaq-cai"; "prune"; blob "DIDL\00\00" })'
