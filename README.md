@@ -15,7 +15,8 @@ See also the [open issues](https://github.com/dfinity/threshold/issues) for this
 
 - one can initially set up the canister with a collection of signers or voters (which are principals)
 - one can add new proposals (by mnemonic and action, an action being the destination canister, invoked method and argument payload)
-- signers can vote to accept/deny (but can't flip the vote)
+- signers can vote to accept/reject (but can't flip the vote)
+- votes are recorded by principal and timestamp only
 - when sufficient votes for a proposal have gathered, the action gets
   executed and the proposal retired
 - retired proposals can be pruned
