@@ -4,8 +4,10 @@ Threshold voting and execution for the IC
 
 ## Beta quality
 
-_Note_: This canister is not yet production quality, mostly due to a
-missing test suite, however **an initial security review has been performed**.
+_Note_: This canister can be considered production quality, a test suite is exercised in CI,
+        and **an initial security review has been performed**.
+
+PRs are welcome, but be prepared for an extended review period.
 
 See also the [open issues](https://github.com/dfinity/threshold/issues) for this project.
 
