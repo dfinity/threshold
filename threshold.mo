@@ -74,7 +74,7 @@ actor class (signers : [Principal]) = threshold {
               // retire the proposal
               prop.state := { prop.state with active = false };
               // execute payload and keep result in the state
-              await execute(prop, payload);
+              await* execute(prop, payload);
             };
             return;
           };
@@ -176,7 +176,7 @@ actor class (signers : [Principal]) = threshold {
   };
 
   // internal helper
-  private func execute(prop : Prop, (principal, method, blob) : Payload) : async () {
+  private func execute(prop : Prop, (principal, method, blob) : Payload) : async* () {
     // send the payload
     switch (isSelfUpgrade(principal, method, blob)) {
       case (?params) {
