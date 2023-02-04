@@ -156,7 +156,7 @@ actor class (signers : [Principal]) = threshold {
     null;
   };
 
-  // traps when p is not in the given principals list
+  // traps when `principal` is not in the given `according` principals list
   func authoriseAccording(principal : Principal, according : [Principal]) {
     for (a in according.vals()) {
       if (principal == a) return;
@@ -167,10 +167,10 @@ actor class (signers : [Principal]) = threshold {
     assert false;
   };
 
-  // traps when p is not in the `authorised` list
+  // traps when `principal` is not in the `authorised` list
   func authorise(principal : Principal) = authoriseAccording(principal, authorised);
 
-  // traps when p is not this actor
+  // traps when `principal` is not this actor
   func self(principal : Principal) {
     assert principal == principalOfActor threshold;
   };
