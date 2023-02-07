@@ -12,7 +12,7 @@ rm install-brew.sh
 
 # Install DFINITY SDK.
 curl --location --output install-dfx.sh "https://internetcomputer.org/install.sh"
-DFX_VERSION=${DFX_VERSION:=0.13.0-beta.3} bash install-dfx.sh < <(yes Y)
+DFX_VERSION=${DFX_VERSION:=0.13.0} bash install-dfx.sh < <(yes Y)
 rm install-dfx.sh
 dfx cache install
 
