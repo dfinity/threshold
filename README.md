@@ -2,10 +2,12 @@
 
 Threshold voting and execution for the IC
 
-## Beta quality
+## Post-Beta quality
 
 _Note_: This canister can be considered production quality, a test suite is exercised in CI,
         and **an initial security review has been performed**.
+
+To fully declare this SW as "ready for production", we solicit user reports (positive and/or negative).
 
 PRs are welcome, but be prepared for an extended review period.
 
