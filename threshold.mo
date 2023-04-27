@@ -6,6 +6,7 @@ import {
   principalOfActor;
   nat64ToNat;
   time = nanos1970;
+  trap = trapWith;
 } = "mo:⛔";
 
 actor class (signers : [Principal]) = threshold {
@@ -54,7 +55,7 @@ actor class (signers : [Principal]) = threshold {
   public shared ({ caller }) func submit(memo : Text, payload : Payload) : async Nat {
     authorise caller;
     serial += 1;
-    let ?votes = vote(caller, []);
+    let ?votes = vote(caller, []) else trap();
     let state = { active = true; yes = 1; no = 0; votes; result = null };
     proposals := prepend<Prop>({ id = serial; memo; signers = authorised; var state; payload }, proposals);
     serial;
@@ -202,7 +203,7 @@ actor class (signers : [Principal]) = threshold {
     for (element in elements.vals()) {
       if (predicate element) { filtered[numHits] := ?element; numHits += 1 };
     };
-    Array_tabulate<A>(numHits, func i { let ?unpacked = filtered[i]; unpacked });
+    Array_tabulate<A>(numHits, func i { let ?unpacked = filtered[i] else trap(); unpacked });
   };
 
   // helpers
@@ -234,4 +235,6 @@ actor class (signers : [Principal]) = threshold {
     };
     ?prepend((now(), signer), votes);
   };
+
+  func trap() : None = trapWith "unexpected";
 };
