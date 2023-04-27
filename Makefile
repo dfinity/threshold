@@ -9,7 +9,7 @@ test:
 	dfx deploy threshold --mode reinstall --yes --with-cycles 8000000000000 \
 	  --argument='(vec {principal "'$$(dfx identity get-principal)'"; principal "2vxsx-fae"})'
 	dfx canister call threshold getSigners
-	echo id: dfx canister id threshold
+	echo id: $$(dfx canister id threshold)
 	dfx canister call threshold submit '("purge", record { principal "'$$(dfx canister id threshold)'"; "prune"; blob "DIDL\00\00" })'
 	dfx canister call threshold getProposal 1
 	dfx canister call threshold accept 1

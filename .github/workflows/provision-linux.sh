@@ -25,7 +25,7 @@ rm "v${matchers_version}.tar.gz"
 mv "$(dfx cache show)/motoko-matchers-${matchers_version}" "$(dfx cache show)/motoko-matchers"
 
 # Install wasmtime
-wasmtime_version=3.0.1
+wasmtime_version=8.0.0
 curl -fsSLO "https://github.com/bytecodealliance/wasmtime/releases/download/v${wasmtime_version}/wasmtime-v${wasmtime_version}-x86_64-linux.tar.xz"
 mkdir -p "${HOME}/bin"
 tar -xf "wasmtime-v${wasmtime_version}-x86_64-linux.tar.xz" --directory "${HOME}/bin/"
