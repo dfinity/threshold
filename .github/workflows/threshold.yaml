@@ -17,7 +17,7 @@ jobs:
   threshold-darwin:
     runs-on: macos-12
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
       - name: Provision Darwin
         run: bash .github/workflows/provision-darwin.sh
       - name: Motoko Threshold Darwin
@@ -27,7 +27,7 @@ jobs:
   threshold-linux:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
       - name: Provision Linux
         run: bash .github/workflows/provision-linux.sh
       - name: Motoko Threshold Linux
